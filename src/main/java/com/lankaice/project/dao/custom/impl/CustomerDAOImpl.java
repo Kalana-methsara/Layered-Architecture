@@ -1,6 +1,6 @@
-package com.lankaice.project.dao.impl;
+package com.lankaice.project.dao.custom.impl;
 
-import com.lankaice.project.dao.CustomerDAO;
+import com.lankaice.project.dao.custom.CustomerDAO;
 import com.lankaice.project.entity.Customer;
 
 import java.util.List;
