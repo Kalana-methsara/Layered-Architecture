@@ -2,7 +2,7 @@ package com.lankaice.project.model;
 
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.OrderDetailsDto;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,7 +71,7 @@ private final StockModel stockModel=new StockModel();
     }
 
     private boolean saveOrderDetails(OrderDetailsDto orderDetailsDto) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute(
+        return SQLUtil.execute(
                 "INSERT INTO Order_Details (order_id, product_id, quantity, unit_price, discount) VALUES (?,?,?,?,?)",
                 orderDetailsDto.getOrderId(),
                 orderDetailsDto.getProductId(),
@@ -81,7 +81,7 @@ private final StockModel stockModel=new StockModel();
     }
 
     public boolean saveOrderDetailsList(int orderId, String code, int qty, double unitPrice, double discount) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute(
+        return SQLUtil.execute(
                 "INSERT INTO Order_Details (order_id, product_id, quantity, unit_price, discount) VALUES (?,?,?,?,?)",orderId,code,qty,unitPrice,discount);
     }
 
@@ -92,7 +92,7 @@ private final StockModel stockModel=new StockModel();
         JOIN Orders o ON od.order_id = o.order_id
         WHERE o.order_date = ?
     """;
-        ResultSet rs = CrudUtil.execute(sql, java.sql.Date.valueOf(LocalDate.now()));
+        ResultSet rs = SQLUtil.execute(sql, java.sql.Date.valueOf(LocalDate.now()));
         if (rs.next()) {
             return rs.getInt("total_quantity");
         }

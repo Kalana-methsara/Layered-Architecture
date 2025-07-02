@@ -2,7 +2,7 @@ package com.lankaice.project.model;
 
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.SalaryDto;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,13 +11,13 @@ public class SalaryModel {
 
     private String getEmployeeRole(String employeeId) throws SQLException, ClassNotFoundException {
         String sql = "SELECT job_role FROM Employee WHERE employee_id = ?";
-        ResultSet rs = CrudUtil.execute(sql, employeeId);
+        ResultSet rs = SQLUtil.execute(sql, employeeId);
         return rs.next() ? rs.getString("job_role") : null;
     }
 
     private String getEmployeeName(String employeeId) throws SQLException, ClassNotFoundException {
         String sql = "SELECT name FROM Employee WHERE employee_id = ?";
-        ResultSet rs = CrudUtil.execute(sql, employeeId);
+        ResultSet rs = SQLUtil.execute(sql, employeeId);
         return rs.next() ? rs.getString("name") : null;
     }
 
@@ -76,7 +76,7 @@ public class SalaryModel {
             INNER JOIN Employee e ON s.employee_id = e.employee_id
         """;
 
-        ResultSet rs = CrudUtil.execute(sql);
+        ResultSet rs = SQLUtil.execute(sql);
         ArrayList<SalaryDto> list = new ArrayList<>();
         while (rs.next()) {
             list.add(convertToDto(rs));
@@ -102,7 +102,7 @@ public class SalaryModel {
     public boolean updateSalaryStatus(int salaryId, String newStatus) {
         String sql = "UPDATE Salary SET status = ? WHERE salary_id = ?";
         try {
-            return CrudUtil.execute(sql, newStatus, salaryId);
+            return SQLUtil.execute(sql, newStatus, salaryId);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -111,7 +111,7 @@ public class SalaryModel {
 
     public boolean deleteSalary(String employeeId, int payMonth, int payYear) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Salary WHERE employee_id = ? AND pay_month = ? AND pay_year = ?";
-        return CrudUtil.execute(sql, employeeId, payMonth, payYear);
+        return SQLUtil.execute(sql, employeeId, payMonth, payYear);
     }
 
     public boolean updateSalary(SalaryDto dto) throws SQLException, ClassNotFoundException {
@@ -120,7 +120,7 @@ public class SalaryModel {
             SET basic_amount = ?, bonus = ?, deduction = ?, net_amount = ?, status = ? 
             WHERE employee_id = ? AND pay_month = ? AND pay_year = ?
         """;
-        return CrudUtil.execute(sql,
+        return SQLUtil.execute(sql,
                 dto.getBasicSalary(),
                 dto.getBonus(),
                 dto.getDeduction(),
@@ -133,7 +133,7 @@ public class SalaryModel {
     }
 
     public boolean generateMonthlySalaries(int month, int year) throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT employee_id FROM Employee ORDER BY employee_id ASC");
+        ResultSet rs = SQLUtil.execute("SELECT employee_id FROM Employee ORDER BY employee_id ASC");
 
         boolean atLeastOneGenerated = false;
 
@@ -161,14 +161,14 @@ public class SalaryModel {
             double deduction = calculateDeduction(empId, month, year);
             double netSalary = basicSalary + bonus - deduction;
 
-            ResultSet checkRs = CrudUtil.execute(
+            ResultSet checkRs = SQLUtil.execute(
                     "SELECT 1 FROM Salary WHERE employee_id = ? AND pay_month = ? AND pay_year = ?",
                     empId, month, year
             );
 
             if (!checkRs.next()) {
                 String sql = "INSERT INTO Salary (employee_id, basic_amount, bonus, deduction, net_amount, pay_month, pay_year)VALUES (?, ?, ?,?,?, ?, ?)";
-                CrudUtil.execute(sql, empId, basicSalary, bonus,deduction, netSalary,month,year);
+                SQLUtil.execute(sql, empId, basicSalary, bonus,deduction, netSalary,month,year);
 
 
                 atLeastOneGenerated = true;
@@ -180,6 +180,6 @@ public class SalaryModel {
 
     public boolean deleteAllSalary() throws SQLException, ClassNotFoundException {
         String sql ="DELETE FROM Salary";
-       return CrudUtil.execute(sql);
+       return SQLUtil.execute(sql);
     }
 }

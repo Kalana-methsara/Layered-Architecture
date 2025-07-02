@@ -1,10 +1,11 @@
 package com.lankaice.project.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface CrudDAO<T> {
-    List<T> getAll();
+public interface CrudDAO<T> extends SuperDAO{
+    List<T> getAll() throws SQLException;
     String getNextId();
     boolean save(T t);
     boolean update(T t);

@@ -41,4 +41,9 @@ public class CustomerDAOImpl implements CustomerDAO {
     public Optional<Customer> findById(String id) {
         return Optional.empty();
     }
+
+    @Override
+    public List<Customer> search(String text) {
+        return List.of();
+    }
 }

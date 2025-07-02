@@ -1,6 +1,6 @@
 package com.lankaice.project.model;
 
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.dto.OrderPaymentDto;
 
 import java.sql.ResultSet;
@@ -14,7 +14,7 @@ public class OrderPaymentModel {
     public void savePayment(OrderPaymentDto dto) throws SQLException, ClassNotFoundException {
         String sql = "INSERT INTO Order_Payment (payment_id, order_id, payment_method, items_count, subtotal, discount, net_total, payment_date, status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        CrudUtil.execute(
+        SQLUtil.execute(
                 sql,
                 dto.getPaymentId(),
                 dto.getOrderId(),
@@ -31,7 +31,7 @@ public class OrderPaymentModel {
     public boolean updatePayment(OrderPaymentDto dto) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE Order_Payment SET order_id = ?, payment_method = ?, items_count = ?, subtotal = ?, discount = ?, net_total = ?, payment_date = ?, status = ? " +
                 "WHERE payment_id = ?";
-        return CrudUtil.execute(
+        return SQLUtil.execute(
                 sql,
                 dto.getOrderId(),
                 dto.getPaymentMethod(),
@@ -53,7 +53,7 @@ public class OrderPaymentModel {
                     "order_id LIKE ? OR " +
                     "payment_method LIKE ? OR " +
                     "status LIKE ?";
-            ResultSet rs = CrudUtil.execute(sql,
+            ResultSet rs = SQLUtil.execute(sql,
                     "%" + keyword + "%",
                     "%" + keyword + "%",
                     "%" + keyword + "%",
@@ -80,12 +80,12 @@ public class OrderPaymentModel {
     }
     public boolean deletePayment(String paymentId) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Order_Payment WHERE payment_id = ?";
-        return CrudUtil.execute(sql, paymentId);
+        return SQLUtil.execute(sql, paymentId);
     }
 
     public List<OrderPaymentDto> getAllPayment() throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM Order_Payment";
-        ResultSet resultSet = CrudUtil.execute(sql);
+        ResultSet resultSet = SQLUtil.execute(sql);
 
         List<OrderPaymentDto> list = new ArrayList<>();
 
@@ -108,13 +108,13 @@ public class OrderPaymentModel {
 
     public boolean isPaymentCompleted(int orderId) throws SQLException, ClassNotFoundException {
         String sql = "SELECT 1 FROM Order_Payment WHERE order_id = ? AND status = 'Success'";
-        ResultSet resultSet = CrudUtil.execute(sql, orderId);
+        ResultSet resultSet = SQLUtil.execute(sql, orderId);
         return resultSet.next();
     }
 
 
     public String getNextPaymentId() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = CrudUtil.execute("SELECT payment_id FROM Order_Payment ORDER BY payment_id DESC LIMIT 1");
+        ResultSet resultSet = SQLUtil.execute("SELECT payment_id FROM Order_Payment ORDER BY payment_id DESC LIMIT 1");
         String prefix = "PAY";
 
         if (resultSet.next()) {

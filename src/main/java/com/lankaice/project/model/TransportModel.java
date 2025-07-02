@@ -1,7 +1,7 @@
 package com.lankaice.project.model;
 
 import com.lankaice.project.dto.TransportDto;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ public class TransportModel {
 
     public int getTodayTransportTotal() throws SQLException, ClassNotFoundException {
         String sql = "SELECT SUM(quantity) AS total_quantity FROM Transport WHERE transport_date = CURDATE()";
-        ResultSet rs = CrudUtil.execute(sql);
+        ResultSet rs = SQLUtil.execute(sql);
         if (rs.next()) {
             return rs.getInt("total_quantity");
         }
@@ -24,7 +24,7 @@ public class TransportModel {
         String sql = "INSERT INTO Transport (transport_id, product_id, vehicle_number, transport_date, start_time, end_time, quantity, location, status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        return CrudUtil.execute(sql,
+        return SQLUtil.execute(sql,
                 dto.getTransportId(),
                 dto.getProductId(),
                 dto.getVehicleNumber(),
@@ -40,7 +40,7 @@ public class TransportModel {
     public boolean updateTransport(TransportDto dto) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE Transport SET product_id = ?, vehicle_number = ?, transport_date = ?, start_time = ?, end_time = ?, quantity = ?, location = ?, status = ? WHERE transport_id = ?";
 
-        return CrudUtil.execute(sql,
+        return SQLUtil.execute(sql,
                 dto.getProductId(),
                 dto.getVehicleNumber(),
                 dto.getTransportDate(),
@@ -55,12 +55,12 @@ public class TransportModel {
 
     public boolean deleteTransport(String transportId) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Transport WHERE transport_id = ?";
-        return CrudUtil.execute(sql, transportId);
+        return SQLUtil.execute(sql, transportId);
     }
 
     public List<TransportDto> getAllTransport() throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM Transport ORDER BY transport_date DESC";
-        ResultSet rs = CrudUtil.execute(sql);
+        ResultSet rs = SQLUtil.execute(sql);
         List<TransportDto> transportList = new ArrayList<>();
 
         while (rs.next()) {
@@ -71,7 +71,7 @@ public class TransportModel {
 
     public List<TransportDto> getTransportByDate(String date) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM Transport WHERE transport_date = ?";
-        ResultSet rs = CrudUtil.execute(sql, date);
+        ResultSet rs = SQLUtil.execute(sql, date);
 
         List<TransportDto> list = new ArrayList<>();
         while (rs.next()) {
@@ -82,7 +82,7 @@ public class TransportModel {
 
     public String getNextId() throws SQLException, ClassNotFoundException {
         String prefix = "TP";
-        ResultSet rs = CrudUtil.execute("SELECT transport_id FROM Transport ORDER BY transport_id DESC LIMIT 1");
+        ResultSet rs = SQLUtil.execute("SELECT transport_id FROM Transport ORDER BY transport_id DESC LIMIT 1");
 
         if (rs.next()) {
             String lastId = rs.getString("transport_id");

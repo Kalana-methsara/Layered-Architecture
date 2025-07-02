@@ -2,7 +2,7 @@ package com.lankaice.project.model;
 
 import com.lankaice.project.dto.UserDto;
 import com.lankaice.project.db.DBConnection;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,7 +39,7 @@ public class UserModel {
         return null;
     }
     public ArrayList<UserDto> viewAllUsers()throws ClassNotFoundException, SQLException {
-        ResultSet resultSet = CrudUtil.execute("SELECT * FROM User");
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM User");
         ArrayList<UserDto> users = new ArrayList<>();
         while (resultSet.next()) {
            UserDto user = new UserDto(
@@ -55,7 +55,7 @@ public class UserModel {
     }
     public boolean addUser(UserDto user) throws SQLException, ClassNotFoundException {
         String sql = "INSERT INTO User (userName, password, name, email, role) VALUES (?, ?, ?, ?, ?)";
-        return CrudUtil.execute(sql,
+        return SQLUtil.execute(sql,
                 user.getUsername(),
                 user.getPassword(),
                 user.getName(),
@@ -66,7 +66,7 @@ public class UserModel {
 
     public boolean updateUser(UserDto user) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE User SET password = ?, name = ?, email = ?, role = ? WHERE userName = ?";
-        return CrudUtil.execute(sql,
+        return SQLUtil.execute(sql,
                 user.getPassword(),
                 user.getName(),
                 user.getEmail(),
@@ -77,11 +77,11 @@ public class UserModel {
 
     public boolean deleteUser(String userName) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM User WHERE userName = ?";
-        return CrudUtil.execute(sql, userName);
+        return SQLUtil.execute(sql, userName);
     }
     public boolean isOnlyOneUserExists() throws SQLException, ClassNotFoundException {
         String sql = "SELECT COUNT(*) AS count FROM User";
-        ResultSet resultSet = CrudUtil.execute(sql);
+        ResultSet resultSet = SQLUtil.execute(sql);
 
         if (resultSet.next()) {
             int count = resultSet.getInt("count");

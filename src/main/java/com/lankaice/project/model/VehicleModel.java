@@ -1,7 +1,7 @@
 package com.lankaice.project.model;
 
 import com.lankaice.project.dto.VehicleDto;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 public class VehicleModel {
 
     public ArrayList<VehicleDto> viewAllVehicles() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = CrudUtil.execute("SELECT * FROM Vehicle");
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Vehicle");
         ArrayList<VehicleDto> vehicles = new ArrayList<>();
         while (resultSet.next()) {
             VehicleDto vehicle = new VehicleDto(
@@ -25,7 +25,7 @@ public class VehicleModel {
         return vehicles;
     }
     public ArrayList<VehicleDto> activeVehicles() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = CrudUtil.execute("SELECT * FROM Vehicle WHERE status = 'Active'");
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Vehicle WHERE status = 'Active'");
         ArrayList<VehicleDto> activeList = new ArrayList<>();
         while (resultSet.next()) {
             VehicleDto vehicle = new VehicleDto(
@@ -40,7 +40,7 @@ public class VehicleModel {
         return activeList;
     }
     public ArrayList<String> getActiveVehicle() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = CrudUtil.execute("SELECT vehicle_number FROM Vehicle WHERE status = 'Active'");
+        ResultSet resultSet = SQLUtil.execute("SELECT vehicle_number FROM Vehicle WHERE status = 'Active'");
         ArrayList<String> activeVehicleIds = new ArrayList<>();
         while (resultSet.next()) {
             activeVehicleIds.add(resultSet.getString("vehicle_number"));
@@ -52,7 +52,7 @@ public class VehicleModel {
     public String getVehicleId(String vehicleNumber) throws SQLException, ClassNotFoundException {
         String sql = "SELECT vehicle_id FROM Vehicle WHERE vehicle_number = ?";
 
-        ResultSet resultSet = CrudUtil.execute(sql, vehicleNumber);
+        ResultSet resultSet = SQLUtil.execute(sql, vehicleNumber);
         if (resultSet.next()) {
             return resultSet.getString("vehicle_id");
         }
@@ -60,7 +60,7 @@ public class VehicleModel {
     }
 
     public List<String> getInactiveVehicles() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = CrudUtil.execute(
+        ResultSet resultSet = SQLUtil.execute(
                 "SELECT vehicle_number FROM Vehicle WHERE status = 'Inactive' OR status = 'Under Repair'"
         );
         List<String> inactiveVehicleNumbers = new ArrayList<>();
@@ -71,10 +71,10 @@ public class VehicleModel {
     }
 
     public boolean setActiveVehicle(String vehicleNumber) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("UPDATE Vehicle SET status = 'Active' WHERE vehicle_number = ?", vehicleNumber);
+        return SQLUtil.execute("UPDATE Vehicle SET status = 'Active' WHERE vehicle_number = ?", vehicleNumber);
     }
     public boolean setUnderRepairVehicle(String vehicleNumber) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("UPDATE Vehicle SET status = 'Under Repair' WHERE vehicle_number = ?", vehicleNumber);
+        return SQLUtil.execute("UPDATE Vehicle SET status = 'Under Repair' WHERE vehicle_number = ?", vehicleNumber);
     }
 
 }

@@ -4,9 +4,7 @@ import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.OrderDetailsDto;
 import com.lankaice.project.dto.OrdersDto;
 import com.lankaice.project.dto.PendingOrderDto;
-import com.lankaice.project.util.CrudUtil;
-import javafx.scene.control.Alert;
-import javafx.stage.StageStyle;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,7 +12,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class OrdersModel {
@@ -25,7 +22,7 @@ public class OrdersModel {
 
     // View all orders
     public ArrayList<OrdersDto> viewAllOrders() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = CrudUtil.execute("SELECT * FROM Orders");
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Orders");
         ArrayList<OrdersDto> orders = new ArrayList<>();
 
         while (resultSet.next()) {
@@ -49,7 +46,7 @@ public class OrdersModel {
         String sql = "SELECT po.order_id, c.name AS customer_name, p.name AS product_name, po.quantity, po.status FROM PendingOrder po JOIN Customer c ON po.customer_id = c.customer_id JOIN Product p ON po.product_id = p.product_id WHERE po.status = 'PENDING' AND DATE(po.request_time) = ? ";
 
 
-        ResultSet resultSet = CrudUtil.execute(sql, java.sql.Date.valueOf(date));
+        ResultSet resultSet = SQLUtil.execute(sql, java.sql.Date.valueOf(date));
         ArrayList<PendingOrderDto> pendingList = new ArrayList<>();
 
         while (resultSet.next()) {
@@ -73,7 +70,7 @@ public class OrdersModel {
             connection.setAutoCommit(false);
 
             // Insert into Orders
-            boolean isOrderSaved = CrudUtil.execute(
+            boolean isOrderSaved = SQLUtil.execute(
                     "INSERT INTO Orders(order_id, customer_id, order_date, order_time, description, vehicle_number, total_amount) VALUES(?, ?, ?, ?, ?, ?, ?)",
                     dto.getOrderId(), dto.getCustomerId(), dto.getOrderDate(), dto.getOrderTime(),
                     dto.getDescription(), dto.getVehicle_number(), dto.getTotalAmount());
@@ -85,7 +82,7 @@ public class OrdersModel {
 
             // Insert into Order_Details and update stock
             for (OrderDetailsDto detail : dto.getCartList()) {
-                boolean isDetailSaved = CrudUtil.execute(
+                boolean isDetailSaved = SQLUtil.execute(
                         "INSERT INTO Order_Details(order_id, product_id, quantity, unit_price, discount) VALUES(?, ?, ?, ?, ?)",
                         dto.getOrderId(), detail.getProductId(), detail.getQuantity(), detail.getUnitPrice(), detail.getDiscount());
 
@@ -94,7 +91,7 @@ public class OrdersModel {
                     return false;
                 }
 
-                boolean isStockUpdated = CrudUtil.execute(
+                boolean isStockUpdated = SQLUtil.execute(
                         "UPDATE Stock SET stock_quantity = stock_quantity - ? WHERE product_id = ?",
                         detail.getQuantity(), detail.getProductId());
 
@@ -102,7 +99,7 @@ public class OrdersModel {
                     connection.rollback();
                     return false;
                 }
-                boolean isPendingOrderSaved = CrudUtil.execute(
+                boolean isPendingOrderSaved = SQLUtil.execute(
                         "INSERT INTO PendingOrder(order_id, customer_id, product_id, quantity, request_time, status) VALUES (?, ?, ?, ?, ?, ?)",
                         dto.getOrderId(), dto.getCustomerId(), detail.getProductId(), detail.getQuantity(),
                         Timestamp.valueOf(LocalDateTime.now()), "PENDING");
@@ -115,12 +112,12 @@ public class OrdersModel {
             }
 
             // Update Booking status if exists
-            ResultSet rs = CrudUtil.execute(
+            ResultSet rs = SQLUtil.execute(
                     "SELECT * FROM Booking WHERE customer_id = ? AND request_date = ?",
                     dto.getCustomerId(), dto.getOrderDate());
 
             if (rs.next()) {
-                boolean isBookingUpdated = CrudUtil.execute(
+                boolean isBookingUpdated = SQLUtil.execute(
                         "UPDATE Booking SET status = 'Confirmed' WHERE customer_id = ? AND request_date = ?",
                         dto.getCustomerId(), dto.getOrderDate());
 
@@ -135,7 +132,7 @@ public class OrdersModel {
                 VehicleModel vModel = new VehicleModel();
                 String vehicleId = vModel.getVehicleId(dto.getVehicle_number());
 
-                boolean isDeliverySaved = CrudUtil.execute(
+                boolean isDeliverySaved = SQLUtil.execute(
                         "INSERT INTO Delivery (order_id, delivery_date, delivery_time, delivery_address, delivery_status, vehicle_id) VALUES (?, ?, ?,?, ?, ?)",
                         dto.getOrderId(), dto.getOrderDate(), dto.getOrderTime(), "Galle", "Pending", vehicleId);
 
@@ -144,7 +141,7 @@ public class OrdersModel {
                     return false;
                 }
 
-                boolean isVehicleStatusUpdated = CrudUtil.execute(
+                boolean isVehicleStatusUpdated = SQLUtil.execute(
                         "UPDATE Vehicle SET status = 'Inactive' WHERE vehicle_id = ?",
                         vehicleId);
 
@@ -168,7 +165,7 @@ public class OrdersModel {
 
     // Get last order ID
     public int getLastOrderId() throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT MAX(order_id) AS order_id FROM Orders");
+        ResultSet rs = SQLUtil.execute("SELECT MAX(order_id) AS order_id FROM Orders");
         if (rs.next()) {
             int lastId = rs.getInt("order_id");
             return rs.wasNull() ? 1001 : lastId;
@@ -179,7 +176,7 @@ public class OrdersModel {
     public boolean updateOrderStatus(int orderId, String productName, String newStatus) throws SQLException, ClassNotFoundException {
         String productId = productModel.findIdByName(productName);
         String sql = "UPDATE PendingOrder SET status = ? WHERE order_id = ? AND product_id = ?";
-        return CrudUtil.execute(sql, newStatus, orderId, productId); // ✅ Correct order
+        return SQLUtil.execute(sql, newStatus, orderId, productId); // ✅ Correct order
     }
 
 

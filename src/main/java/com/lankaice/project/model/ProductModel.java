@@ -1,7 +1,7 @@
 package com.lankaice.project.model;
 
 import com.lankaice.project.dto.ProductDto;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ public class ProductModel {
     // ✅ Get all products
     public List<ProductDto> getAllProducts() throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM Product";
-        ResultSet rs = CrudUtil.execute(sql);
+        ResultSet rs = SQLUtil.execute(sql);
 
         List<ProductDto> productList = new ArrayList<>();
         while (rs.next()) {
@@ -29,12 +29,12 @@ public class ProductModel {
 
     public boolean updateProductPrice(String productId, double newPrice) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE Product SET price_per_unit = ? WHERE product_id = ?";
-        return CrudUtil.execute(sql, newPrice, productId);
+        return SQLUtil.execute(sql, newPrice, productId);
     }
 
     // ✅ Get product name by ID
     public String findNameById(String productId) throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT name FROM Product WHERE product_id = ?", productId);
+        ResultSet rs = SQLUtil.execute("SELECT name FROM Product WHERE product_id = ?", productId);
         if (rs.next()) {
             return rs.getString("name");
         }
@@ -43,7 +43,7 @@ public class ProductModel {
 
     // ✅ Get product ID by name
     public String findIdByName(String productName) throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT product_id FROM Product WHERE name = ?", productName);
+        ResultSet rs = SQLUtil.execute("SELECT product_id FROM Product WHERE name = ?", productName);
         if (rs.next()) {
             return rs.getString("product_id");
         }
@@ -52,7 +52,7 @@ public class ProductModel {
 
     // ✅ Get all product IDs
     public List<String> getAllProductIds() throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT product_id FROM Product");
+        ResultSet rs = SQLUtil.execute("SELECT product_id FROM Product");
         List<String> list = new ArrayList<>();
         while (rs.next()) {
             list.add(rs.getString("product_id"));
@@ -62,7 +62,7 @@ public class ProductModel {
 
     // ✅ Get product name by ID (fixed incomplete method)
     public String getProductNameById(String productId) throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT name FROM Product WHERE product_id = ?", productId);
+        ResultSet rs = SQLUtil.execute("SELECT name FROM Product WHERE product_id = ?", productId);
         if (rs.next()) {
             return rs.getString("name");
         }

@@ -1,8 +1,7 @@
 package com.lankaice.project.model;
 
-import com.lankaice.project.dto.CustomerDto;
 import com.lankaice.project.dto.SupplierDto;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +12,7 @@ public class SupplierModel {
     public boolean addSupplier(SupplierDto supplierDto) throws SQLException, ClassNotFoundException {
         String sql = "INSERT INTO Supplier (supplier_id, name, nic,contact,email,address) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
-        return CrudUtil.execute(sql,
+        return SQLUtil.execute(sql,
                 supplierDto.getSupplierId(),
                 supplierDto.getName(),
                 supplierDto.getNic(),
@@ -25,12 +24,12 @@ public class SupplierModel {
 
     public boolean deleteSupplier(String supplierId) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Supplier WHERE supplier_id = ?";
-        return CrudUtil.execute(sql,supplierId);
+        return SQLUtil.execute(sql,supplierId);
     }
 
     public boolean updateSupplier(SupplierDto dto) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE Supplier SET name=?, nic=?, email=?, contact=?, address=? WHERE supplier_id=?";
-        return CrudUtil.execute(sql,
+        return SQLUtil.execute(sql,
                 dto.getName(),
                 dto.getNic(),
                 dto.getEmail(),
@@ -52,7 +51,7 @@ public class SupplierModel {
                 "address LIKE ? ";
 
         try {
-            ResultSet rs = CrudUtil.execute(sql,
+            ResultSet rs = SQLUtil.execute(sql,
                     "%" + searchText + "%",
                     "%" + searchText1 + "%",
                     "%" + searchText2 + "%",
@@ -82,7 +81,7 @@ public class SupplierModel {
     }
 
     public int getSupplierCount() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = CrudUtil.execute("SELECT COUNT(*) FROM Supplier");
+        ResultSet resultSet = SQLUtil.execute("SELECT COUNT(*) FROM Supplier");
         if (resultSet.next()) {
             return resultSet.getInt(1);
         }
@@ -90,7 +89,7 @@ public class SupplierModel {
     }
 
     public String getLastSupplierId() throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT MAX(supplier_id) FROM Supplier");
+        ResultSet rs = SQLUtil.execute("SELECT MAX(supplier_id) FROM Supplier");
         if (rs.next()) {
             return rs.getString(1);
         }
@@ -98,7 +97,7 @@ public class SupplierModel {
     }
 
     public ArrayList<SupplierDto> getAllSuppliers() throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT * FROM Supplier");
+        ResultSet rs = SQLUtil.execute("SELECT * FROM Supplier");
         ArrayList<SupplierDto> list = new ArrayList<>();
         while (rs.next()) {
             list.add(convertToDto(rs));
@@ -117,7 +116,7 @@ public class SupplierModel {
         );
     }
     public static List<SupplierDto> getAllSupplier() throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT * FROM Supplier");
+        ResultSet rs = SQLUtil.execute("SELECT * FROM Supplier");
         List<SupplierDto> list = new ArrayList<>();
         while (rs.next()) {
             list.add(new SupplierDto(rs.getString("supplier_id"), rs.getString("name"),rs.getString("email")));
@@ -126,7 +125,7 @@ public class SupplierModel {
     }
 
     public static String getSupplierName(String supplierId) throws SQLException, ClassNotFoundException {
-        ResultSet rs = CrudUtil.execute("SELECT name FROM Supplier WHERE supplier_id = ?", supplierId);
+        ResultSet rs = SQLUtil.execute("SELECT name FROM Supplier WHERE supplier_id = ?", supplierId);
         if (rs.next()) {
             return rs.getString("name");
         }

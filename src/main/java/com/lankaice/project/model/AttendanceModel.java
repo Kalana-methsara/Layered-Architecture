@@ -1,7 +1,7 @@
 package com.lankaice.project.model;
 
 import com.lankaice.project.dto.AttendanceDto;
-import com.lankaice.project.util.CrudUtil;
+import com.lankaice.project.dao.util.SQLUtil;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ public class AttendanceModel {
         String sql = "INSERT INTO Attendance (employee_id, date, shift, status, in_time, out_time) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
-        return CrudUtil.<Boolean>execute(
+        return SQLUtil.<Boolean>execute(
                 sql,
                 dto.getEmployeeId(),
                 Date.valueOf(dto.getDate()),
@@ -28,7 +28,7 @@ public class AttendanceModel {
     public boolean updateAttendanceShiftAndTimes(String empId, LocalDate date, String oldShift, String newShift, LocalTime inTime, LocalTime outTime) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE Attendance SET in_time = ?, out_time = ?, shift = ? WHERE employee_id = ? AND date = ? AND shift = ?";
 
-        return CrudUtil.<Boolean>execute(
+        return SQLUtil.<Boolean>execute(
                 sql,
                 inTime != null ? Time.valueOf(inTime) : null,
                 outTime != null ? Time.valueOf(outTime) : null,
@@ -44,7 +44,7 @@ public class AttendanceModel {
 
     public boolean deleteAttendance(String employeeId, LocalDate date, String shift) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Attendance WHERE employee_id = ? AND date = ? AND shift = ?";
-        return CrudUtil.<Boolean>execute(sql, employeeId, Date.valueOf(date), shift);
+        return SQLUtil.<Boolean>execute(sql, employeeId, Date.valueOf(date), shift);
     }
 
     public boolean markAttendance(AttendanceDto dto) throws SQLException, ClassNotFoundException {
@@ -52,7 +52,7 @@ public class AttendanceModel {
                 "VALUES (?, ?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE status = VALUES(status), in_time = VALUES(in_time), out_time = VALUES(out_time)";
 
-        return CrudUtil.<Boolean>execute(
+        return SQLUtil.<Boolean>execute(
                 sql,
                 dto.getEmployeeId(),
                 Date.valueOf(dto.getDate()),
@@ -65,7 +65,7 @@ public class AttendanceModel {
 
     public boolean isDuplicateAttendance(String empId, String date, String shift) throws SQLException, ClassNotFoundException {
         String sql = "SELECT COUNT(*) FROM Attendance WHERE employee_id = ? AND date = ? AND shift = ?";
-        ResultSet rs = CrudUtil.execute(sql, empId, Date.valueOf(date), shift);
+        ResultSet rs = SQLUtil.execute(sql, empId, Date.valueOf(date), shift);
 
         if (rs.next()) {
             return rs.getInt(1) > 0;
@@ -75,7 +75,7 @@ public class AttendanceModel {
 
     public AttendanceDto getAttendance(String empId, String date, String shift) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM Attendance WHERE employee_id = ? AND date = ? AND shift = ?";
-        ResultSet rs = CrudUtil.execute(sql, empId, Date.valueOf(date), shift);
+        ResultSet rs = SQLUtil.execute(sql, empId, Date.valueOf(date), shift);
 
         if (rs.next()) {
             return new AttendanceDto(
@@ -92,7 +92,7 @@ public class AttendanceModel {
 
     public boolean updateOutTime(String empId, String date, String shift, LocalTime outTime) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE Attendance SET out_time = ? WHERE employee_id = ? AND date = ? AND shift = ?";
-        return CrudUtil.<Boolean>execute(
+        return SQLUtil.<Boolean>execute(
                 sql,
                 Time.valueOf(outTime),
                 empId,
@@ -107,7 +107,7 @@ public class AttendanceModel {
                 "JOIN Employee e ON a.employee_id = e.employee_id " +
                 "WHERE a.date = ?";
 
-        ResultSet rs = CrudUtil.execute(sql, date);
+        ResultSet rs = SQLUtil.execute(sql, date);
         ArrayList<AttendanceDto> list = new ArrayList<>();
 
         while (rs.next()) {
