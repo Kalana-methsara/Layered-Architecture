@@ -1,4 +1,7 @@
 package com.lankaice.project.dao.custom;
 
-public interface AttendanceDAO {
+import com.lankaice.project.dao.CrudDAO;
+import com.lankaice.project.entity.Attendance;
+
+public interface AttendanceDAO extends CrudDAO<Attendance> {
 }
