@@ -351,7 +351,7 @@ CREATE TABLE Transport (
 -- ========================
 --     PendingOrder Table
 -- ========================
-CREATE TABLE PendingOrder (
+CREATE TABLE Pending_Order (
                               pending_order_id INT AUTO_INCREMENT PRIMARY KEY,
                               order_id INT NOT NULL,
                               customer_id VARCHAR(5) NOT NULL,
