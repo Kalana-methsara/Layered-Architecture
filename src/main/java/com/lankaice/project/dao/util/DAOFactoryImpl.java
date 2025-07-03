@@ -8,6 +8,7 @@ public class DAOFactoryImpl implements DAOFactory {
     private static DAOFactoryImpl daoFactory;
 
     private DAOFactoryImpl() {
+        
     }
 
     public static DAOFactoryImpl getInstance() {

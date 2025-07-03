@@ -11,7 +11,6 @@ import java.time.LocalTime;
 public class Attendance{
     private int attendanceId;
     private String employeeId;
-    private String name;
     private LocalDate date;
     private String shift;
     private String status;
