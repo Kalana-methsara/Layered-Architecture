@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class OrdersDAOImpl implements OrdersDAO {
     @Override
-    public List<Orders> getAll() throws SQLException {
+    public List<Orders> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

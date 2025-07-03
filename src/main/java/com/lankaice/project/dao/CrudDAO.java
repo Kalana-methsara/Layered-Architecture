@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CrudDAO<T> extends SuperDAO{
-    List<T> getAll() throws SQLException;
+    List<T> getAll() throws SQLException ,ClassNotFoundException;
     String getNextId() throws SQLException;
     boolean save(T t) throws SQLException , ClassNotFoundException;
     boolean update(T t) throws SQLException , ClassNotFoundException;

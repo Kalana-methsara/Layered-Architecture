@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class ProductDAOImpl implements ProductDAO {
     @Override
-    public List<Product> getAll() throws SQLException {
+    public List<Product> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

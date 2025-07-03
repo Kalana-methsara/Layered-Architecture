@@ -2,7 +2,6 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.AttendanceDAO;
 import com.lankaice.project.dao.util.SQLUtil;
-import com.lankaice.project.dto.AttendanceDto;
 import com.lankaice.project.entity.Attendance;
 
 import java.sql.Date;
@@ -17,7 +16,7 @@ import java.util.Optional;
 
 public class AttendanceDAOImpl implements AttendanceDAO {
     @Override
-    public List<Attendance> getAll() throws SQLException {
+    public List<Attendance> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class CustomerDAOImpl implements CustomerDAO {
     @Override
-    public List<Customer> getAll() throws SQLException {
+    public List<Customer> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
     }
 
