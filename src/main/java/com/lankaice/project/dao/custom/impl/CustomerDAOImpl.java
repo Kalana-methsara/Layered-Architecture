@@ -28,10 +28,6 @@ public class CustomerDAOImpl implements CustomerDAO {
         }
         return list;   }
 
-    @Override
-    public String getNextId() throws SQLException {
-        return "";
-    }
 
     @Override
     public boolean save(Customer customer) throws SQLException, ClassNotFoundException {
@@ -64,16 +60,6 @@ public class CustomerDAOImpl implements CustomerDAO {
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Customer WHERE customer_id=?";
         return SQLUtil.execute(sql, id);
-    }
-
-    @Override
-    public List<String> getAllIds() {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Customer> findById(String id) {
-        return Optional.empty();
     }
 
     @Override

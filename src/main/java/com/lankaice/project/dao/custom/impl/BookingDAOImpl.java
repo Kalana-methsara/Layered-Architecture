@@ -32,11 +32,6 @@ public class BookingDAOImpl implements BookingDAO {
 
 
     @Override
-    public String getNextId() throws SQLException {
-        return "";
-    }
-
-    @Override
     public boolean save(Booking booking) throws SQLException, ClassNotFoundException {
         String sql = "INSERT INTO Booking (customer_id, product_id, request_date, request_time, quantity, status) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
@@ -66,16 +61,6 @@ public class BookingDAOImpl implements BookingDAO {
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         return false;
-    }
-
-    @Override
-    public List<String> getAllIds() throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Booking> findById(String id) throws SQLException {
-        return Optional.empty();
     }
 
     @Override

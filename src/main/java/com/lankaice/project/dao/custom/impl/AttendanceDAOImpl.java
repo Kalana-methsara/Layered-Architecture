@@ -20,10 +20,6 @@ public class AttendanceDAOImpl implements AttendanceDAO {
         return List.of();
     }
 
-    @Override
-    public String getNextId() throws SQLException {
-        return "";
-    }
 
     @Override
     public boolean save(Attendance attendance) throws SQLException, ClassNotFoundException {
@@ -139,13 +135,4 @@ public class AttendanceDAOImpl implements AttendanceDAO {
         return list;
     }
 
-    @Override
-    public List<String> getAllIds() {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Attendance> findById(String id) {
-        return Optional.empty();
-    }
 }

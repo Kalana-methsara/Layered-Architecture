@@ -14,11 +14,6 @@ public class OrdersDAOImpl implements OrdersDAO {
     }
 
     @Override
-    public String getNextId() throws SQLException {
-        return "";
-    }
-
-    @Override
     public boolean save(Orders orders) throws SQLException, ClassNotFoundException {
         return false;
     }
@@ -33,13 +28,4 @@ public class OrdersDAOImpl implements OrdersDAO {
         return false;
     }
 
-    @Override
-    public List<String> getAllIds() {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Orders> findById(String id) {
-        return Optional.empty();
-    }
 }

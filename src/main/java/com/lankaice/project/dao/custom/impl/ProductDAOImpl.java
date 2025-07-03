@@ -14,11 +14,6 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public String getNextId() throws SQLException {
-        return "";
-    }
-
-    @Override
     public boolean save(Product product) throws SQLException, ClassNotFoundException {
         return false;
     }
@@ -33,13 +28,4 @@ public class ProductDAOImpl implements ProductDAO {
         return false;
     }
 
-    @Override
-    public List<String> getAllIds() {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Product> findById(String id) {
-        return Optional.empty();
-    }
 }
