@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProductDAOImpl implements ProductDAO {
+
+
     @Override
     public List<Product> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
@@ -28,4 +30,8 @@ public class ProductDAOImpl implements ProductDAO {
         return false;
     }
 
+    @Override
+    public String findIdByName(String productName) throws SQLException, ClassNotFoundException {
+        return "";
+    }
 }

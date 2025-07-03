@@ -1,6 +1,7 @@
 package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.OrderDetailsDAO;
+import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.entity.OrderDetails;
 
 import java.sql.SQLException;
@@ -16,7 +17,13 @@ public class OrderDetailsDAOImpl implements OrderDetailsDAO {
 
     @Override
     public boolean save(OrderDetails orderDetails) throws SQLException, ClassNotFoundException {
-        return false;
+        return SQLUtil.execute(
+                "INSERT INTO Order_Details (order_id, product_id, quantity, unit_price, discount) VALUES (?,?,?,?,?)",
+                orderDetails.getOrderId(),
+                orderDetails.getProductId(),
+                orderDetails.getQuantity(),
+                orderDetails.getUnitPrice(),
+                orderDetails.getDiscount());
     }
 
     @Override
