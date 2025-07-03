@@ -33,6 +33,7 @@ public class DAOFactoryImpl implements DAOFactory {
     @SuppressWarnings("unchecked")
     public <T extends SuperDAO> T getDAO(DAOType daoType) {
         return switch (daoType) {
+            case ATTENDANCE -> (T) new AttendanceDAOImpl();
             case CUSTOMER -> (T) new CustomerDAOImpl();
             case ORDERS -> (T) new OrdersDAOImpl();
             case ORDER_DETAIL -> (T) new OrderDetailsDAOImpl();
