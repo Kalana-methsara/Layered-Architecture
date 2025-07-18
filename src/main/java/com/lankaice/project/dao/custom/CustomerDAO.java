@@ -19,4 +19,8 @@ public interface CustomerDAO extends CrudDAO<Customer> {
 
     List<Customer> searchCustomer(String searchText, String searchText1, String searchText2, String searchText3, String searchText4, String searchText5, String searchText6);
 
+    boolean existsCustomerByNic(String nic) throws SQLException, ClassNotFoundException;
+
+    boolean existsCustomerByPhoneNumber(String phoneNumber) throws SQLException, ClassNotFoundException;
+
     }

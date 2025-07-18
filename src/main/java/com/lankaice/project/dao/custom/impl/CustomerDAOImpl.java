@@ -147,4 +147,27 @@ public class CustomerDAOImpl implements CustomerDAO {
 
         return customerList;
         }
+
+    @Override
+    public boolean existsCustomerByNic(String nic) throws SQLException, ClassNotFoundException {
+        ResultSet rst = SQLUtil.execute(
+                "SELECT * FROM Customer WHERE nic=?",
+                nic
+        );
+       /* if (rst.next()) {
+            return true;
+        }
+        return false;*/
+
+        return rst.next();
+    }
+
+    @Override
+    public boolean existsCustomerByPhoneNumber(String phoneNumber) throws SQLException, ClassNotFoundException {
+        ResultSet rst = SQLUtil.execute(
+                "SELECT * FROM Customer WHERE contact=?",
+                phoneNumber
+        );
+        return rst.next();
+    }
 }
