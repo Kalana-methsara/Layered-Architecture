@@ -1,4 +1,6 @@
 package com.lankaice.project.bo.custom;
 
-public interface SMSEmailBO {
+import com.lankaice.project.bo.SuperBO;
+
+public interface SMSEmailBO extends SuperBO {
 }

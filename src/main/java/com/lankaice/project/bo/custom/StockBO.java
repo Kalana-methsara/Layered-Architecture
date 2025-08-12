@@ -1,4 +1,6 @@
 package com.lankaice.project.bo.custom;
 
-public interface StockBO {
+import com.lankaice.project.bo.SuperBO;
+
+public interface StockBO extends SuperBO {
 }

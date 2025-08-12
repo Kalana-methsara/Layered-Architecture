@@ -1,4 +1,6 @@
 package com.lankaice.project.bo.custom;
 
-public interface RawMaterialBO {
+import com.lankaice.project.bo.SuperBO;
+
+public interface RawMaterialBO extends SuperBO {
 }

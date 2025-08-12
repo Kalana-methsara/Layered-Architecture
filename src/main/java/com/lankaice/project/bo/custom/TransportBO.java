@@ -1,4 +1,6 @@
 package com.lankaice.project.bo.custom;
 
-public interface TransportBO {
+import com.lankaice.project.bo.SuperBO;
+
+public interface TransportBO extends SuperBO {
 }

@@ -1,4 +1,6 @@
 package com.lankaice.project.bo.custom;
 
-public interface OrderPaymentBO {
+import com.lankaice.project.bo.SuperBO;
+
+public interface OrderPaymentBO extends SuperBO {
 }

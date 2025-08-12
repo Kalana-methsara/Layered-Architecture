@@ -1,4 +1,6 @@
 package com.lankaice.project.bo.custom;
 
-public interface VehicleBO {
+import com.lankaice.project.bo.SuperBO;
+
+public interface VehicleBO extends SuperBO {
 }

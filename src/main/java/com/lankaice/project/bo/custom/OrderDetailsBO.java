@@ -1,4 +1,6 @@
 package com.lankaice.project.bo.custom;
 
-public interface OrderDetailsBO {
+import com.lankaice.project.bo.SuperBO;
+
+public interface OrderDetailsBO extends SuperBO {
 }
