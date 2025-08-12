@@ -28,4 +28,9 @@ public class BillingDAOImpl implements BillingDAO {
         return false;
     }
 
+    @Override
+    public Optional<Billing> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
+    }
+
 }

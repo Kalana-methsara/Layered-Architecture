@@ -1,5 +1,8 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.CustomerBO;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.dto.tm.ProductTM;
 import com.lankaice.project.model.*;
@@ -57,7 +60,7 @@ public class ProductPageController implements Initializable {
     private Label lblOrderId;
 
     private final ObservableList<ProductTM> productList = FXCollections.observableArrayList();
-    private final CustomerModel customerModel = new CustomerModel();
+    private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
     private final OrdersModel ordersModel = new OrdersModel();
     private final VehicleModel vehicleModel = new VehicleModel();
     private final ProductModel productModel = new ProductModel();
@@ -86,7 +89,7 @@ public class ProductPageController implements Initializable {
         choiceBoxPay.getSelectionModel().select("Cash");
 
         try {
-            List<CustomerDto> customers = customerModel.getAllCustomers();
+            List<CustomerDto> customers = customerBO.getAllCustomers();
             List<String> customerNames = new ArrayList<>();
             for (CustomerDto c : customers) {
                 customerNames.add(c.toString()); // "C001 Kalana Methsara"
@@ -280,7 +283,7 @@ public class ProductPageController implements Initializable {
             double discount = Double.parseDouble(discountLabel.getText());
             double total = Double.parseDouble(totalLabel.getText());
             String nextPaymentId = orderPaymentModel.getNextPaymentId();
-            String customerName = customerModel.findNameById(customerId);
+            String customerName = customerBO.findNameById(customerId);
 
             OrderPaymentDto ordersPaymentDto = new OrderPaymentDto(nextPaymentId, orderId, paymentMethod, itemsCount, subtotal, discount, total, LocalDateTime.now().toString(), "Success");
 

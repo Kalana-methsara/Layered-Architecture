@@ -157,5 +157,12 @@ public class CustomerBOImpl implements CustomerBO {
         }
         return customerDtos;
     }
-
+    @Override
+    public String findNameById(String customerId) throws SQLException, ClassNotFoundException {
+        return customerDAO.findNameById(customerId);
+    }
+    @Override
+    public String findIdByName(String customerName) throws SQLException, ClassNotFoundException {
+        return customerDAO.findIdByName(customerName);
+    }
 }

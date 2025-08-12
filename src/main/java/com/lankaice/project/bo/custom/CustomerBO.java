@@ -26,5 +26,7 @@ public interface CustomerBO extends SuperBO {
     List<CustomerDto> searchCustomer(String searchText, String searchText1, String searchText2,
                                      String searchText3, String searchText4, String searchText5,
                                      String searchText6) throws SQLException, ClassNotFoundException;
+    String findNameById(String customerId) throws SQLException, ClassNotFoundException;
+    String findIdByName(String customerName) throws SQLException, ClassNotFoundException;
 
 }

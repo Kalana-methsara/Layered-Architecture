@@ -3,6 +3,7 @@ package com.lankaice.project.dao.custom.impl;
 import com.lankaice.project.dao.custom.AttendanceDAO;
 import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.entity.Attendance;
+import com.lankaice.project.entity.Customer;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -43,6 +44,23 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         return false;
+    }
+
+    @Override
+    public Optional<Attendance> findById(String id) throws SQLException, ClassNotFoundException {
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Attendance WHERE employee_id = ?", id);
+        if (resultSet.next()) {
+            return Optional.of(new Attendance(
+                    resultSet.getInt("attendance_id"),
+                    resultSet.getString("employee_id"),
+                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getString("shift"),
+                    resultSet.getString("status"),
+                    resultSet.getTime("in_time") != null ? resultSet.getTime("in_time").toLocalTime() : null,
+                    resultSet.getTime("out_time") != null ? resultSet.getTime("out_time").toLocalTime() : null
+            ));
+        }
+        return Optional.empty();
     }
 
     @Override

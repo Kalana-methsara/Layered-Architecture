@@ -1,5 +1,8 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.CustomerBO;
 import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.dto.BookingRow;
 import com.lankaice.project.model.BookingModel;
@@ -56,7 +59,7 @@ public class BookingPageController implements Initializable {
             col16, col17, col18, col19, col20, col21, col22, col23, col24, col25,
             col26, col27, col28, col29, col30, col31;
 
-    private final CustomerModel customerModel = new CustomerModel();
+    private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
     private final ProductModel productModel = new ProductModel();
     private final BookingModel bookingModel = new BookingModel();
 
@@ -309,7 +312,7 @@ boolean isUpdated = bookingModel.updateBooking(updatedBooking);
     public void onCustomerId(KeyEvent keyEvent) {
         String id = textCustomerId.getText();
         try {
-            String name = customerModel.findNameById(id);
+            String name = customerBO.findNameById(id);
             lblCustomerName.setText(name != null ? name : "Not Found");
         } catch (Exception e) {
             lblCustomerName.setText("Error");
@@ -377,7 +380,7 @@ boolean isUpdated = bookingModel.updateBooking(updatedBooking);
             // Get customer ID
             String customerId;
             try {
-                customerId = customerModel.findIdByName(customerName);
+                customerId = customerBO.findIdByName(customerName);
             } catch (Exception e) {
                 customerId = "Unknown";
             }
