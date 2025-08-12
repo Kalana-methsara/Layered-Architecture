@@ -22,4 +22,5 @@ public enum BOType {
     TRANSPORT,
     USER,
     VEHICLE,
+    PLACE_ORDER
 }

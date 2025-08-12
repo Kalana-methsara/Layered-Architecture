@@ -1,6 +1,6 @@
 package com.lankaice.project.bo;
 
-import com.lankaice.project.bo.custom.impl.CustomerBOImpl;
+import com.lankaice.project.bo.custom.impl.*;
 import com.lankaice.project.dao.custom.impl.*;
 
 public class BOFactoryImpl implements BOFactory {
@@ -40,6 +40,7 @@ public class BOFactoryImpl implements BOFactory {
             case TRANSPORT -> (T) new TransportBOImpl();
             case USER -> (T) new UserBOImpl();
             case VEHICLE -> (T) new VehicleBOImpl();
+            case PLACE_ORDER -> (T) new PlaceOrderBOImpl();
 
         };
     }
