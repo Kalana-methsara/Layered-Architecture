@@ -36,4 +36,9 @@ public class OrderDetailsDAOImpl implements OrderDetailsDAO {
         return false;
     }
 
+    @Override
+    public Optional<OrderDetails> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
+    }
+
 }

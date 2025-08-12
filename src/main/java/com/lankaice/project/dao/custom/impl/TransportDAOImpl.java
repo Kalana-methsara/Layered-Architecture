@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TransportDAOImpl implements TransportDAO {
     @Override
@@ -72,6 +73,11 @@ public class TransportDAOImpl implements TransportDAO {
     public boolean delete(String transportId) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Transport WHERE transport_id = ?";
         return SQLUtil.execute(sql, transportId);    }
+
+    @Override
+    public Optional<Transport> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
+    }
 
     @Override
     public int getTodayTransportTotal() throws SQLException, ClassNotFoundException {

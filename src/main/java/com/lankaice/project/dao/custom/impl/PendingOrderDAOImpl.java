@@ -5,6 +5,7 @@ import com.lankaice.project.entity.PendingOrder;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class PendingOrderDAOImpl implements PendingOrderDAO {
     @Override
@@ -25,5 +26,10 @@ public class PendingOrderDAOImpl implements PendingOrderDAO {
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         return false;
+    }
+
+    @Override
+    public Optional<PendingOrder> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 }

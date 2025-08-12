@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class StockDAOImpl implements StockDAO {
     @Override
@@ -49,6 +50,11 @@ public class StockDAOImpl implements StockDAO {
     public boolean delete(String stockId) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Stock WHERE stock_id = ?";
         return SQLUtil.execute(sql, stockId);
+    }
+
+    @Override
+    public Optional<Stock> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 
     @Override

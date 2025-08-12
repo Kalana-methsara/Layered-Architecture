@@ -5,6 +5,7 @@ import com.lankaice.project.entity.SMSEmail;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class SMSEmailDAOImpl implements SMSEmailDAO {
     @Override
@@ -25,5 +26,10 @@ public class SMSEmailDAOImpl implements SMSEmailDAO {
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         return false;
+    }
+
+    @Override
+    public Optional<SMSEmail> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 }

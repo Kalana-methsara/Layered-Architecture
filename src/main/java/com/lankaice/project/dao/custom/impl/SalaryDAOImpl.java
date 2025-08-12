@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SalaryDAOImpl implements SalaryDAO {
     @Override
@@ -68,6 +69,11 @@ public class SalaryDAOImpl implements SalaryDAO {
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         return false;
+    }
+
+    @Override
+    public Optional<Salary> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 
     @Override

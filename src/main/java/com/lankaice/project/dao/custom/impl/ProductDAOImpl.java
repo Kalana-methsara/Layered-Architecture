@@ -46,6 +46,11 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
+    public Optional<Product> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
+    }
+
+    @Override
     public String findIdByName(String productName) throws SQLException, ClassNotFoundException {
         ResultSet rs = SQLUtil.execute("SELECT product_id FROM Product WHERE name = ?", productName);
         if (rs.next()) {

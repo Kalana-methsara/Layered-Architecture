@@ -3,12 +3,14 @@ package com.lankaice.project.dao.custom.impl;
 import com.lankaice.project.dao.custom.InventoryCartDAO;
 import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.dto.tm.CartItemTM;
+import com.lankaice.project.entity.Customer;
 import com.lankaice.project.entity.InventoryCart;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class InventoryCartDAOImpl implements InventoryCartDAO {
     @Override
@@ -53,6 +55,24 @@ public class InventoryCartDAOImpl implements InventoryCartDAO {
         String sql = "DELETE FROM Inventory_Cart WHERE cart_id = ?";
         return SQLUtil.execute(sql, cartId);
 
+    }
+
+    @Override
+    public Optional<InventoryCart> findById(String id) throws SQLException, ClassNotFoundException {
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Inventory_Cart WHERE cart_id = ?", id);
+        if (resultSet.next()) {
+            return Optional.of(new InventoryCart(
+                    resultSet.getInt("cart_id"),
+                    resultSet.getString("supplier_id"),
+                    resultSet.getInt("material_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("unit_type"),
+                    resultSet.getDouble("unit_price"),
+                    resultSet.getInt("quantity"),
+                    resultSet.getDouble("total")
+            ));
+        }
+        return Optional.empty();
     }
 
     @Override

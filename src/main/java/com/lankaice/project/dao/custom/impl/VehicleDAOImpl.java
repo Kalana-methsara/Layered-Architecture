@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class VehicleDAOImpl implements VehicleDAO {
     @Override
@@ -40,6 +41,11 @@ public class VehicleDAOImpl implements VehicleDAO {
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         return false;
+    }
+
+    @Override
+    public Optional<Vehicle> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 
     @Override

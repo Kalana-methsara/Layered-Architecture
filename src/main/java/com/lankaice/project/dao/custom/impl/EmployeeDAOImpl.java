@@ -3,12 +3,14 @@ package com.lankaice.project.dao.custom.impl;
 import com.lankaice.project.dao.custom.EmployeeDAO;
 import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.dto.EmployeeDto;
+import com.lankaice.project.entity.Customer;
 import com.lankaice.project.entity.Employee;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EmployeeDAOImpl implements EmployeeDAO {
     @Override
@@ -51,6 +53,29 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Employee WHERE employee_id = ?";
         return SQLUtil.execute(sql, id);
+    }
+
+    @Override
+    public Optional<Employee> findById(String id) throws SQLException, ClassNotFoundException {
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Employee WHERE employee_id = ?", id);
+        if (resultSet.next()) {
+            return Optional.of(new Employee(
+                    resultSet.getString("employee_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("nic"),
+                    resultSet.getString("contact"),
+                    resultSet.getString("email"),
+                    resultSet.getString("job_role"),
+                    resultSet.getString("address"),
+                    resultSet.getString("join_date"),
+                    resultSet.getString("date_of_birth"),
+                    resultSet.getString("gender"),
+                    resultSet.getString("bank_account_no"),
+                    resultSet.getString("bank_branch"),
+                    resultSet.getString("license_number")
+            ));
+        }
+        return Optional.empty();
     }
 
     @Override

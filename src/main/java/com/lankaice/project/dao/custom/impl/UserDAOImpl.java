@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserDAOImpl implements UserDAO {
     @Override
@@ -83,5 +84,10 @@ public class UserDAOImpl implements UserDAO {
     public boolean delete(String userName) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM User WHERE userName = ?";
         return SQLUtil.execute(sql, userName);
+    }
+
+    @Override
+    public Optional<User> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 }

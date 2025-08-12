@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SupplierDAOImpl implements SupplierDAO {
     @Override
@@ -58,6 +59,11 @@ public class SupplierDAOImpl implements SupplierDAO {
     public boolean delete(String supplierId) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Supplier WHERE supplier_id = ?";
         return SQLUtil.execute(sql,supplierId);
+    }
+
+    @Override
+    public Optional<Supplier> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 
     @Override

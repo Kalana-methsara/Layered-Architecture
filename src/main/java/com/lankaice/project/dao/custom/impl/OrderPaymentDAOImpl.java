@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class OrderPaymentDAOImpl implements OrderPaymentDAO {
     @Override
@@ -74,6 +75,11 @@ public class OrderPaymentDAOImpl implements OrderPaymentDAO {
     public boolean delete(String paymentId) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Order_Payment WHERE payment_id = ?";
         return SQLUtil.execute(sql, paymentId);
+    }
+
+    @Override
+    public Optional<OrderPayment> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 
     @Override

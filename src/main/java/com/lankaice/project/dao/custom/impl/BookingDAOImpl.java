@@ -4,6 +4,7 @@ import com.lankaice.project.dao.custom.BookingDAO;
 import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.entity.Booking;
+import com.lankaice.project.entity.Customer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,6 +62,23 @@ public class BookingDAOImpl implements BookingDAO {
     @Override
     public boolean delete(String id) throws SQLException, ClassNotFoundException {
         return false;
+    }
+
+    @Override
+    public Optional<Booking> findById(String id) throws SQLException, ClassNotFoundException {
+        ResultSet rs = SQLUtil.execute("SELECT * FROM Booking WHERE customer_id = ?", id);
+        if (rs.next()) {
+            return Optional.of(new Booking(
+                    rs.getInt("booking_id"),
+                    rs.getString("customer_id"),
+                    rs.getString("product_id"),
+                    rs.getDate("request_date"),
+                    rs.getString("request_time"),
+                    rs.getInt("quantity"),
+                    rs.getString("status")
+            ));
+        }
+        return Optional.empty();
     }
 
     @Override
