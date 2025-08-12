@@ -48,6 +48,11 @@ public class OrdersDAOImpl implements OrdersDAO {
     }
 
     @Override
+    public Optional<Orders> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
+    }
+
+    @Override
     public int getLastOrderId() throws SQLException, ClassNotFoundException {
         ResultSet rs = SQLUtil.execute("SELECT MAX(order_id) AS order_id FROM Orders");
         if (rs.next()) {
@@ -64,5 +69,10 @@ public class OrdersDAOImpl implements OrdersDAO {
         String sql = "UPDATE PendingOrder SET status = ? WHERE order_id = ? AND product_id = ?";
         return SQLUtil.execute(sql, newStatus, orderId, productId);*/
         return false;
+    }
+    @Override
+    public boolean existOrdersByCustomerId(String customerId) throws SQLException, ClassNotFoundException {
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Orders WHERE customer_id = ?", customerId);
+        return resultSet.next();
     }
 }

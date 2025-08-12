@@ -1,11 +1,9 @@
 package com.lankaice.project.controller;
 
 import com.lankaice.project.db.DBConnection;
-import com.lankaice.project.dto.CustomerDto;
 import com.lankaice.project.dto.Session;
 import com.lankaice.project.dto.SupplierDto;
 import com.lankaice.project.dto.UserDto;
-import com.lankaice.project.model.CustomerModel;
 import com.lankaice.project.model.SupplierModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -34,7 +32,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.util.*;
 

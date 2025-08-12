@@ -3,7 +3,6 @@ package com.lankaice.project.controller;
 import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.dto.BookingRow;
 import com.lankaice.project.model.BookingModel;
-import com.lankaice.project.model.CustomerModel;
 import com.lankaice.project.model.ProductModel;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;

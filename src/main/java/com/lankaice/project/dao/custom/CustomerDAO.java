@@ -6,6 +6,7 @@ import com.lankaice.project.entity.Customer;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerDAO extends CrudDAO<Customer> {
 
@@ -22,5 +23,7 @@ public interface CustomerDAO extends CrudDAO<Customer> {
     boolean existsCustomerByNic(String nic) throws SQLException, ClassNotFoundException;
 
     boolean existsCustomerByPhoneNumber(String phoneNumber) throws SQLException, ClassNotFoundException;
+
+    Optional<Customer> findCustomerByNic(String nic) throws SQLException, ClassNotFoundException;
 
     }

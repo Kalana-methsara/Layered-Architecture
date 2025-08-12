@@ -9,4 +9,6 @@ public interface OrdersDAO extends CrudDAO<Orders> {
     int getLastOrderId() throws SQLException, ClassNotFoundException;
 
     boolean updateOrderStatus(int orderId, String productName, String newStatus) throws SQLException, ClassNotFoundException;
+    boolean existOrdersByCustomerId(String customerId) throws SQLException, ClassNotFoundException;
+
 }

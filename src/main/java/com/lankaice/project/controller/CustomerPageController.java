@@ -1,12 +1,12 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.CustomerBO;
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.CustomerDto;
-import com.lankaice.project.dto.EmployeeDto;
 import com.lankaice.project.dto.Session;
 import com.lankaice.project.dto.UserDto;
-import com.lankaice.project.model.CustomerModel;
-import com.lankaice.project.model.EmployeeModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
@@ -31,7 +31,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.view.JasperViewer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -95,6 +94,9 @@ public class CustomerPageController implements Initializable {
     @FXML
     private TextField textSearchCustomer;
 
+    private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
+
+
     @FXML
     void SetData(MouseEvent event) {
         CustomerDto customerDto = tableView.getSelectionModel().getSelectedItem();
@@ -124,22 +126,19 @@ public class CustomerPageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                boolean isAdded = new CustomerModel().addCustomer(customerDto);
-                if (isAdded) {
+                customerBO.saveCustomer(customerDto);
                     showSuccessMessage("Customer added successfully!");
                     loadCustomerTable();
                     clearFields();
                     setGeneretedCustomerId();
-                } else {
-                    showErrorMessage("Failed to add customer!");
-                }
+
             } catch (SQLIntegrityConstraintViolationException e) {
                 showErrorMessage("Integrity constraint violation: " + e.getMessage());
             } catch (SQLException e) {
                 showErrorMessage("SQL Error: " + e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
-                showErrorMessage("Error occurred while adding!");
+            showErrorMessage("Failed to add customer!");
             }
         }
     }
@@ -225,25 +224,22 @@ public class CustomerPageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                boolean isDeleted = new CustomerModel().deleteCustomer(id);
-                if (isDeleted) {
+                customerBO.deleteCustomer(id);
                     showSuccessMessage("Customer deleted successfully!");
                     loadCustomerTable();
                     clearFields();
                     setGeneretedCustomerId();
-                } else {
-                    showErrorMessage("Failed to delete customer!");
-                }
+
             } catch (Exception e) {
                 e.printStackTrace();
-                showErrorMessage("Error occurred while deleting!");
+                showErrorMessage("Failed to delete customer!");
             }
         }
     }
 
 
     @FXML
-    void btnSearchOnAction(ActionEvent event) {
+    void btnSearchOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         searchOnAction();
 
     }
@@ -262,22 +258,19 @@ public class CustomerPageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                boolean isUpdated = new CustomerModel().updateCustomer(dto);
-                if (isUpdated) {
+                customerBO.updateCustomer(dto);
                     showSuccessMessage("Customer updated successfully!");
                     loadCustomerTable();
                     clearFields();
                     setGeneretedCustomerId();
-                } else {
-                    showErrorMessage("Failed to update customer!");
-                }
+
             } catch (SQLIntegrityConstraintViolationException e) {
                 showErrorMessage("Integrity constraint violation: " + e.getMessage());
             } catch (SQLException e) {
                 showErrorMessage("SQL Error: " + e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
-                showErrorMessage("Error occurred while updating!");
+                showErrorMessage("Failed to update customer!");
             }
         }
     }
@@ -295,14 +288,13 @@ public class CustomerPageController implements Initializable {
 
     }
 
-    private void searchOnAction() {
+    private void searchOnAction() throws SQLException, ClassNotFoundException {
         String searchText = textSearchCustomer.getText().trim().toLowerCase();
         if(searchText.isEmpty()) {
             loadCustomerTable();
             return;
         }
-        CustomerModel customerModel = new CustomerModel();
-        ArrayList<CustomerDto>customerDtos=customerModel.searchCustomer(searchText,searchText,searchText,searchText,searchText,searchText,searchText);
+        List<CustomerDto>customerDtos=customerBO.searchCustomer(searchText,searchText,searchText,searchText,searchText,searchText,searchText);
         ObservableList<CustomerDto> filteredList = FXCollections.observableArrayList();
 
         for (CustomerDto customerDto : customerDtos) {
@@ -337,7 +329,7 @@ public class CustomerPageController implements Initializable {
 
     private void setNoOfCustomer() {
         try {
-            int count =new CustomerModel().getCustomerCount();
+            int count =customerBO.getCustomerCount();
             noOfCustomer.setText(String.valueOf(count));
         }catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -346,7 +338,7 @@ public class CustomerPageController implements Initializable {
 
     private void setGeneretedCustomerId() {
         try {
-            String lastId = new CustomerModel().getLastCustomerId();
+            String lastId = customerBO.getLastCustomerId();
             int newIdNum = 1;
             if (lastId != null && lastId.startsWith("C")) {
                 newIdNum = Integer.parseInt(lastId.substring(1)) + 1;
@@ -389,8 +381,7 @@ public class CustomerPageController implements Initializable {
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
 
         try{
-            CustomerModel customerModel = new CustomerModel();
-            ArrayList<CustomerDto> customerDtos = customerModel.getAllCustomers();
+            List<CustomerDto> customerDtos = customerBO.getAllCustomers();
             if(customerDtos != null && !customerDtos.isEmpty()){
                 showSuccessMessage("Customers loaded: " + customerDtos.size());
                 ObservableList<CustomerDto> employeeObservableList = FXCollections.observableArrayList(customerDtos);

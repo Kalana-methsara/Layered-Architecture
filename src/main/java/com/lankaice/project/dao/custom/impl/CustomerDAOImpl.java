@@ -63,6 +63,24 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
+    public Optional<Customer> findById(String id) throws SQLException, ClassNotFoundException {
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Customer WHERE customer_id = ?", id);
+        if (resultSet.next()) {
+            return Optional.of(new Customer(
+                    resultSet.getString("customer_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("nic"),
+                    resultSet.getString("email"),
+                    resultSet.getString("contact"),
+                    resultSet.getString("address"),
+                    resultSet.getString("description")
+            ));
+        }
+        return Optional.empty();
+    }
+
+
+    @Override
     public String findNameById(String customerId) throws SQLException, ClassNotFoundException {
         ResultSet rst = SQLUtil.execute(
                 "SELECT name FROM Customer WHERE customer_id=?",
@@ -169,5 +187,22 @@ public class CustomerDAOImpl implements CustomerDAO {
                 phoneNumber
         );
         return rst.next();
+    }
+
+    @Override
+    public Optional<Customer> findCustomerByNic(String nic) throws SQLException, ClassNotFoundException {
+        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Customer WHERE nic = ?", nic);
+        if (resultSet.next()) {
+            return Optional.of(new Customer(
+                    resultSet.getString("customer_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("nic"),
+                    resultSet.getString("email"),
+                    resultSet.getString("contact"),
+                    resultSet.getString("address"),
+                    resultSet.getString("description")
+            ));
+        }
+        return Optional.empty();
     }
 }
