@@ -193,6 +193,7 @@ CREATE TABLE Delivery (
 CREATE TABLE Attendance (
                             attendance_id INT PRIMARY KEY AUTO_INCREMENT,
                             employee_id  VARCHAR(5) NOT NULL,
+                            name VARCHAR(100) NOT NULL,
                             date DATE NOT NULL,
                             shift ENUM('Morning', 'Night') NOT NULL,
                             status ENUM('Present', 'Absent', 'Leave') NOT NULL,

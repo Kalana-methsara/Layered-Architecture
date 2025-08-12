@@ -22,4 +22,6 @@ public interface EmployeeDAO extends CrudDAO<Employee> {
     boolean isLicenseExists(String license) throws SQLException, ClassNotFoundException;
 
     int getEmployeeCountByRole(String role) throws SQLException, ClassNotFoundException;
-    }
+
+    String findNameById(String employeeId)throws SQLException, ClassNotFoundException;
+}

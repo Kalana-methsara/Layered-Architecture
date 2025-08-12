@@ -2,8 +2,10 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.Validation.AdbReverseHelper;
 import com.lankaice.project.Validation.QRHttpServer;
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.AttendanceBO;
 import com.lankaice.project.dto.AttendanceDto;
-import com.lankaice.project.model.AttendanceModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
@@ -25,6 +27,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class EmployeeMenuController implements Initializable {
@@ -80,7 +83,7 @@ public class EmployeeMenuController implements Initializable {
     @FXML
     private ProgressBar progressBar;
 
-    private final AttendanceModel attendanceModel = new AttendanceModel();
+    private final AttendanceBO attendanceBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ATTENDANCE);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -112,12 +115,12 @@ public class EmployeeMenuController implements Initializable {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         try {
-            var attendanceList = attendanceModel.getAttendanceByDate(yesterday.toString());
+            var attendanceList = attendanceBO.getAttendanceByDate(LocalDate.parse(yesterday.toString()));
 
             for (AttendanceDto dto : attendanceList) {
                 if ("Night".equals(dto.getShift()) && dto.getOutTime() == null) {
                     LocalTime defaultOutTime = LocalTime.of(7, 59); // 7:59 AM as default
-                    attendanceModel.updateOutTime(dto.getEmployeeId(), yesterday.toString(), "Night", defaultOutTime);
+                    attendanceBO.updateOutTime(dto.getEmployeeId(), LocalDate.parse(yesterday.toString()), "Night", defaultOutTime);
                 }
             }
 
@@ -138,13 +141,13 @@ public class EmployeeMenuController implements Initializable {
         LocalDate today = LocalDate.now();
 
         try {
-            var attendanceList = attendanceModel.getAttendanceByDate(today.toString());
+            var attendanceList = attendanceBO.getAttendanceByDate(LocalDate.parse(today.toString()));
 
             for (AttendanceDto dto : attendanceList) {
                 if ("Morning".equals(dto.getShift()) && dto.getOutTime() == null) {
 
                     LocalTime defaultOutTime = LocalTime.of(17, 00);
-                    attendanceModel.updateOutTime(dto.getEmployeeId(), today.toString(), "Morning", defaultOutTime);
+                    attendanceBO.updateOutTime(dto.getEmployeeId(), LocalDate.parse(today.toString()), "Morning", defaultOutTime);
 
                     AttendanceDto nightShiftAttendance = new AttendanceDto();
                     nightShiftAttendance.setEmployeeId(dto.getEmployeeId());
@@ -155,7 +158,7 @@ public class EmployeeMenuController implements Initializable {
                     nightShiftAttendance.setInTime(LocalTime.of(17, 00));
                     nightShiftAttendance.setOutTime(null);
 
-                    attendanceModel.markAttendance(nightShiftAttendance);
+                    attendanceBO.markAttendance(nightShiftAttendance);
                 }
             }
 
@@ -172,7 +175,7 @@ public class EmployeeMenuController implements Initializable {
         colStartTime1.setCellValueFactory(new PropertyValueFactory<>("outTime"));
 
         try {
-            ArrayList<AttendanceDto> attendanceDtos = attendanceModel.getAttendanceByDate(String.valueOf(LocalDate.now()));
+            List<AttendanceDto> attendanceDtos = attendanceBO.getAttendanceByDate((LocalDate.now()));
 
             if (attendanceDtos != null && !attendanceDtos.isEmpty()) {
                 // ✅ Sort by inTime
@@ -289,7 +292,7 @@ loadAttendanceStats();
         int lateCount = 0;
         int onTimeCount = 0;
 
-        var attendanceList = attendanceModel.getAttendanceByDate(today.toString());
+        var attendanceList = attendanceBO.getAttendanceByDate(today);
 
         for (AttendanceDto dto : attendanceList) {
             if ("Morning".equals(dto.getShift()) && dto.getInTime() != null) {

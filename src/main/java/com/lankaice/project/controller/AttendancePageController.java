@@ -1,8 +1,11 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.AttendanceBO;
+import com.lankaice.project.bo.custom.CustomerBO;
 import com.lankaice.project.dto.AttendanceDto;
 import com.lankaice.project.dto.EmployeeDto;
-import com.lankaice.project.model.AttendanceModel;
 import com.lankaice.project.model.EmployeeModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -17,11 +20,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -106,7 +107,7 @@ public class AttendancePageController implements Initializable {
     @FXML
     private Label textWorkingHours;
 
-    private final AttendanceModel attendanceModel =new AttendanceModel();
+    private final AttendanceBO attendanceBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ATTENDANCE);
 
     @FXML
     void SetData(MouseEvent event) {
@@ -152,19 +153,16 @@ public class AttendancePageController implements Initializable {
                 return;
             }
 
-            AttendanceDto dto = new AttendanceDto(id, name, date, shift, inTime, outTime, status);
-            boolean isSaved = attendanceModel.saveAttendance(dto);
+            AttendanceDto dto = new AttendanceDto(id, name, date, shift, status,inTime, outTime);
+            attendanceBO.saveAttendance(dto);
 
-            if (isSaved) {
                 showSuccessMessage("Attendance saved successfully!");
                 btnClearOnAction(null);
-            } else {
-                showErrorMessage("Failed to save attendance.");
-            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorMessage("Error while saving.");
+        showErrorMessage("Failed to save attendance.");
         }
     }
 
@@ -200,7 +198,7 @@ public class AttendancePageController implements Initializable {
             }
 
             // Call update method with oldShift and newShift
-            boolean isUpdated = attendanceModel.updateAttendanceShiftAndTimes(id, date, oldShiftValue, newShift, inTime, outTime);
+            boolean isUpdated = attendanceBO.updateAttendanceShiftAndTimes(id, date, oldShiftValue, newShift, inTime, outTime);
 
             if (isUpdated) {
                 showSuccessMessage("Attendance updated successfully!");
@@ -229,7 +227,7 @@ public class AttendancePageController implements Initializable {
                 return;
             }
 
-            boolean isDeleted = attendanceModel.deleteAttendance(id, LocalDate.parse(date.toString()),shift);
+            boolean isDeleted = attendanceBO.deleteAttendance(id, LocalDate.parse(date.toString()),shift);
 
             if (isDeleted) {
                 showSuccessMessage("Attendance deleted successfully!");
@@ -294,7 +292,7 @@ public class AttendancePageController implements Initializable {
         colWorkingHours.setCellValueFactory(new PropertyValueFactory<>("workingHours"));
 
         try {
-            var attendanceList = attendanceModel.getAttendanceByDate(selectedDate.toString());
+            var attendanceList = attendanceBO.getAttendanceByDate(LocalDate.parse(selectedDate.toString()));
 
             for (AttendanceDto dto : attendanceList) {
                 dto.setWorkingHours(calculateWorkingHours(dto.getInTime(), dto.getOutTime()));

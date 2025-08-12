@@ -192,4 +192,18 @@ public class EmployeeDAOImpl implements EmployeeDAO {
             return result.getInt(1);
         }
         return 0;    }
+
+    @Override
+    public String findNameById(String employeeId) throws SQLException, ClassNotFoundException{
+        ResultSet rst = SQLUtil.execute(
+                "SELECT name FROM Employee WHERE employee_id=?",
+                employeeId
+        );
+        if (rst.next()) {
+            return rst.getString("name");
+        }
+        return "";
+    }
+
+
 }

@@ -1,7 +1,11 @@
 package com.lankaice.project.Validation;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.AttendanceBO;
+import com.lankaice.project.bo.custom.CustomerBO;
+import com.lankaice.project.bo.custom.EmployeeBO;
 import com.lankaice.project.dto.ShiftInfoDto;
-import com.lankaice.project.model.AttendanceModel;
 import com.lankaice.project.dto.AttendanceDto;
 
 import java.io.IOException;
@@ -41,7 +45,7 @@ public class QRHttpServer {
             return;
         }
 
-        AttendanceModel attendanceModel = new AttendanceModel();
+         final AttendanceBO attendanceBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ATTENDANCE);
      //   server = HttpServer.create(new InetSocketAddress(8081), 0);
         server = HttpServer.create(new InetSocketAddress("0.0.0.0", 8081), 0);
 
@@ -57,14 +61,14 @@ public class QRHttpServer {
 
                 // Add this inside your /scan handler after getting empId, date, and shift
                 try {
-                    AttendanceDto existing = attendanceModel.getAttendance(empId, date, shift);
+                    AttendanceDto existing = attendanceBO.getAttendance(empId, LocalDate.parse(date), shift);
                     if (existing != null) {
                         if (existing.getOutTime() == null) {
                             LocalTime now = LocalTime.now();
                             LocalTime inTime = existing.getInTime();
 
                             if (inTime != null && java.time.Duration.between(inTime, now).toHours() >= 4) {
-                                boolean result = attendanceModel.updateOutTime(empId, date, shift, now);
+                                boolean result = attendanceBO.updateOutTime(empId, LocalDate.parse(date), shift, now);
                                 response = result
                                         ? "✅ Out-time marked for " + empId + " (" + shift + " shift)"
                                         : "❌ Failed to mark out-time.";
@@ -89,8 +93,16 @@ public class QRHttpServer {
                 }
 
                 if (empId != null && !empId.isEmpty()) {
+                     final EmployeeBO employeeBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.EMPLOYEE);
+                    String name = null;
+                    try {
+                        name = employeeBO.findNameById(empId);
+                    } catch (SQLException | ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
                     AttendanceDto dto = new AttendanceDto(
                             empId,
+                            name,
                             LocalDate.parse(date),
                             shift,
                             "Present",
@@ -98,16 +110,11 @@ public class QRHttpServer {
                             null  // Out time can be handled separately later
                     );
 
-                    try {
-                        boolean result = attendanceModel.markAttendance(dto);
-                        response = result
-                                ? "✅ Attendance marked for " + empId + " (" + shift + " shift)"
-                                : "❌ Failed to mark attendance.";
-                        sendResponse(exchange, 200, response);
-                    } catch (SQLException | ClassNotFoundException e) {
-                        response = "❌ Server error: " + e.getMessage();
-                        sendResponse(exchange, 500, response);
-                    }
+                    boolean result = attendanceBO.markAttendance(dto);
+                    response = result
+                            ? "✅ Attendance marked for " + empId + " (" + shift + " shift)"
+                            : "❌ Failed to mark attendance.";
+                    sendResponse(exchange, 200, response);
                 } else {
                     response = "⚠️ Invalid or missing employee ID";
                     sendResponse(exchange, 400, response);

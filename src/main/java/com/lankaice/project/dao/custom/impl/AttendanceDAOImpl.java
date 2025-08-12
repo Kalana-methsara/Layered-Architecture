@@ -24,11 +24,12 @@ public class AttendanceDAOImpl implements AttendanceDAO {
 
     @Override
     public boolean save(Attendance attendance) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO Attendance (employee_id, date, shift, status, in_time, out_time) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Attendance (employee_id,name, date, shift, status, in_time, out_time) VALUES (?, ?,?, ?, ?, ?, ?)";
 
         return SQLUtil.execute(
                 sql,
                 attendance.getEmployeeId(),
+                attendance.getName(),
                 Date.valueOf(attendance.getDate()),
                 attendance.getShift(),
                 attendance.getStatus(),
@@ -53,6 +54,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             return Optional.of(new Attendance(
                     resultSet.getInt("attendance_id"),
                     resultSet.getString("employee_id"),
+                    resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     resultSet.getString("shift"),
                     resultSet.getString("status"),
@@ -85,13 +87,14 @@ public class AttendanceDAOImpl implements AttendanceDAO {
 
     @Override
     public boolean markAttendance(Attendance attendance) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO Attendance (employee_id, date, shift, status, in_time, out_time) " +
-                "VALUES (?, ?, ?, ?, ?, ?) " +
+        String sql = "INSERT INTO Attendance (employee_id, name,date, shift, status, in_time, out_time) " +
+                "VALUES (?,?, ?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE status = VALUES(status), in_time = VALUES(in_time), out_time = VALUES(out_time)";
 
         return SQLUtil.<Boolean>execute(
                 sql,
                 attendance.getEmployeeId(),
+                attendance.getName(),
                 Date.valueOf(attendance.getDate()),
                 attendance.getShift(),
                 attendance.getStatus(),
@@ -109,6 +112,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             return new Attendance(
                     rs.getInt("attendance_id"),
                     rs.getString("employee_id"),
+                    rs.getString("name"),
                     rs.getDate("date").toLocalDate(),
                     rs.getString("shift"),
                     rs.getString("status"),
@@ -142,6 +146,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
         while (rs.next()) {
             Attendance dto = new Attendance();
             dto.setEmployeeId(rs.getString("employee_id"));
+            dto.setName(rs.getString("name"));
             dto.setDate(rs.getDate("date").toLocalDate());
             dto.setShift(rs.getString("shift"));
             dto.setStatus(rs.getString("status"));

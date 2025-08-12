@@ -16,10 +16,11 @@ import com.lankaice.project.entity.Customer;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class CustomerBOImpl implements CustomerBO {
-    private CustomerDAO customerDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.CUSTOMER);
+    private final CustomerDAO customerDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.CUSTOMER);
     private final OrdersDAO orderDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDERS);
     private final EntityDTOConverter converter = new EntityDTOConverter();
 
@@ -83,7 +84,7 @@ public class CustomerBOImpl implements CustomerBO {
         if (customerByNicOptional.isPresent()) {
             Customer customer = customerByNicOptional.get();
 
-            if (customer.getCustomerId() != dto.getCustomerId()) {
+            if (!Objects.equals(customer.getCustomerId(), dto.getCustomerId())) {
                 throw new DuplicateException("Duplicate nic");
             }
         }

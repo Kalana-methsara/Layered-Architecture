@@ -21,9 +21,9 @@ public class AttendanceDto {
     private LocalTime outTime;
     private String workingHours;
 
-    // Used when adding/updating without attendanceId or workingHours
-    public AttendanceDto(String employeeId, LocalDate date, String shift, String status, LocalTime inTime, LocalTime outTime) {
+    public AttendanceDto( String employeeId,String name, LocalDate date, String shift, String status, LocalTime inTime, LocalTime outTime) {
         this.employeeId = employeeId;
+        this.name = name;
         this.date = date;
         this.shift = shift;
         this.status = status;
@@ -31,13 +31,5 @@ public class AttendanceDto {
         this.outTime = outTime;
     }
 
-    public AttendanceDto(String employeeId, String name, LocalDate date, String shift, LocalTime inTime, LocalTime outTime, String status) {
-        this.employeeId = employeeId;
-        this.name = name;
-        this.date = date;
-        this.shift = shift;
-        this.inTime = inTime;
-        this.outTime = outTime;
-        this.status = status;
-    }
+
 }
