@@ -3,10 +3,10 @@ package com.lankaice.project.controller;
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.AttendanceBO;
-import com.lankaice.project.bo.custom.CustomerBO;
+import com.lankaice.project.bo.custom.EmployeeBO;
 import com.lankaice.project.dto.AttendanceDto;
 import com.lankaice.project.dto.EmployeeDto;
-import com.lankaice.project.model.EmployeeModel;
+import com.lankaice.project.entity.Employee;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -108,6 +108,7 @@ public class AttendancePageController implements Initializable {
     private Label textWorkingHours;
 
     private final AttendanceBO attendanceBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ATTENDANCE);
+    private final EmployeeBO employeeBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.EMPLOYEE);
 
     @FXML
     void SetData(MouseEvent event) {
@@ -123,7 +124,7 @@ public class AttendancePageController implements Initializable {
             textOutTime.setText(attendanceDto.getOutTime() != null ? attendanceDto.getOutTime().toString() : "");
 
             try {
-                EmployeeDto employeeDto = new EmployeeModel().searchbyId(attendanceDto.getEmployeeId());
+                Employee employeeDto = employeeBO.searchById(attendanceDto.getEmployeeId());
                 if (employeeDto != null) {
                     textRole.setValue(employeeDto.getJobRole());
                 }
@@ -273,7 +274,7 @@ public class AttendancePageController implements Initializable {
         colRole.setCellValueFactory(cellData -> {
             AttendanceDto dto = cellData.getValue();
             try {
-                EmployeeDto employeeDto = new EmployeeModel().searchbyId(dto.getEmployeeId());
+                Employee employeeDto = employeeBO.searchById(dto.getEmployeeId());
                 if (employeeDto != null) {
                     return new SimpleStringProperty(employeeDto.getJobRole());
                 }
@@ -336,8 +337,7 @@ public class AttendancePageController implements Initializable {
             showErrorMessage("Please enter an Employee ID.");
             return;
         }
-        EmployeeModel employeeModel = new EmployeeModel();
-        EmployeeDto employee = employeeModel.searchbyId(employeeId);
+        Employee employee = employeeBO.searchById(employeeId);
         textName.setText(employee.getName());
         textRole.setValue(employee.getJobRole());
     }

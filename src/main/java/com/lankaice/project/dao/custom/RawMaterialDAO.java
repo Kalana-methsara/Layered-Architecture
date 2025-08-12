@@ -1,7 +1,5 @@
 package com.lankaice.project.dao.custom;
 
-import com.lankaice.project.dao.CrudDAO;
-import com.lankaice.project.dto.RawMaterialsDto;
 import com.lankaice.project.entity.RawMaterials;
 
 import java.sql.SQLException;

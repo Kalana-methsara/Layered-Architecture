@@ -4,6 +4,7 @@ import com.lankaice.project.bo.SuperBO;
 import com.lankaice.project.bo.exception.DuplicateException;
 import com.lankaice.project.bo.exception.InUseException;
 import com.lankaice.project.dto.EmployeeDto;
+import com.lankaice.project.entity.Employee;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -36,4 +37,6 @@ public interface EmployeeBO extends SuperBO {
     int getEmployeeCountByRole(String role) throws SQLException, ClassNotFoundException;
 
     List<EmployeeDto> searchByName(String name) throws SQLException, ClassNotFoundException;
+
+    Employee searchById(String employeeId)throws SQLException, ClassNotFoundException;
 }

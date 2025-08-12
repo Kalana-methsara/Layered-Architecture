@@ -3,7 +3,6 @@ package com.lankaice.project.bo.custom.impl;
 import com.lankaice.project.bo.custom.EmployeeBO;
 import com.lankaice.project.bo.exception.DuplicateException;
 import com.lankaice.project.bo.exception.InUseException;
-import com.lankaice.project.dao.DAOFactory;
 import com.lankaice.project.dao.custom.EmployeeDAO;
 import com.lankaice.project.dao.util.DAOFactoryImpl;
 import com.lankaice.project.dao.util.DAOType;
@@ -110,5 +109,10 @@ public class EmployeeBOImpl implements EmployeeBO {
             dtoList.add(converter.getEmployeeDto(employee));
         }
         return dtoList;
+    }
+
+    @Override
+    public Employee searchById(String employeeId) throws SQLException, ClassNotFoundException {
+        return employeeDAO.searchById(employeeId);
     }
 }

@@ -2,7 +2,6 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.RawMaterialDAO;
 import com.lankaice.project.dao.util.SQLUtil;
-import com.lankaice.project.dto.RawMaterialsDto;
 import com.lankaice.project.entity.RawMaterials;
 
 import java.sql.ResultSet;

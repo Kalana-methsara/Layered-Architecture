@@ -1,6 +1,8 @@
 package com.lankaice.project.controller;
 
-import com.lankaice.project.model.EmployeeModel;
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.EmployeeBO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,6 +34,9 @@ public class EmployeeReportController implements Initializable {
     @FXML
     private Label lblWorker;
 
+    private final EmployeeBO employeeBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.EMPLOYEE);
+
+
     @FXML
     void btnClose(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -44,11 +49,11 @@ public class EmployeeReportController implements Initializable {
     }
     private void loadEmployeeCounts() {
         try {
-            lblManager.setText(String.valueOf(EmployeeModel.getEmployeeCountByRole("Manager")));
-            lblCashier.setText(String.valueOf(EmployeeModel.getEmployeeCountByRole("Cashier")));
-            lblDriver.setText(String.valueOf(EmployeeModel.getEmployeeCountByRole("Driver")));
-            lblSupervisor.setText(String.valueOf(EmployeeModel.getEmployeeCountByRole("Supervisor")));
-            lblWorker.setText(String.valueOf(EmployeeModel.getEmployeeCountByRole("Worker")));
+            lblManager.setText(String.valueOf(employeeBO.getEmployeeCountByRole("Manager")));
+            lblCashier.setText(String.valueOf(employeeBO.getEmployeeCountByRole("Cashier")));
+            lblDriver.setText(String.valueOf(employeeBO.getEmployeeCountByRole("Driver")));
+            lblSupervisor.setText(String.valueOf(employeeBO.getEmployeeCountByRole("Supervisor")));
+            lblWorker.setText(String.valueOf(employeeBO.getEmployeeCountByRole("Worker")));
         } catch (Exception e) {
             e.printStackTrace();
         }

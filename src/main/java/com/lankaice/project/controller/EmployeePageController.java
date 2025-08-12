@@ -1,9 +1,11 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.EmployeeBO;
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.EmployeeDto;
 import com.lankaice.project.dto.UserDto;
-import com.lankaice.project.model.EmployeeModel;
 import com.lankaice.project.dto.Session;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -103,6 +105,9 @@ public class EmployeePageController implements Initializable {
     @FXML
     private ChoiceBox<String> txtGender;
 
+    private final EmployeeBO employeeBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.EMPLOYEE);
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         txtRole.setItems(FXCollections.observableArrayList("Worker", "Supervisor", "Cashier", "Driver", "Manager"));
@@ -138,15 +143,12 @@ public class EmployeePageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
             try {
-                boolean isAdded = new EmployeeModel().addEmployee(dto);
-                if (isAdded) {
+                employeeBO.saveEmployee(dto);
                     showSuccessMessage("Employee added successfully!");
                     loadEmployeeTable();
                     clearFields();
                     setGeneratedEmployeeId();
-                } else {
-                    showErrorMessage("Failed to add employee!");
-                }
+
             } catch (SQLIntegrityConstraintViolationException e) {
                 showErrorMessage("Integrity constraint violation: " + e.getMessage());
                 //  new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
@@ -155,7 +157,7 @@ public class EmployeePageController implements Initializable {
                 // new Alert(Alert.AlertType.ERROR, "SQL Error: " + e.getMessage()).show();
             } catch (Exception e) {
                 e.printStackTrace();
-                showErrorMessage("Error occurred while adding!");
+                showErrorMessage("Failed to add employee!");
             }
         }
     }
@@ -174,15 +176,12 @@ public class EmployeePageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
             try {
-                boolean isUpdated = new EmployeeModel().updateEmployee(dto);
-                if (isUpdated) {
+                employeeBO.updateEmployee(dto);
                     showSuccessMessage("Employee updated successfully!");
                     loadEmployeeTable();
                     clearFields();
                     setGeneratedEmployeeId();
-                } else {
-                    showErrorMessage("Failed to update employee!");
-                }
+
             } catch (SQLIntegrityConstraintViolationException e) {
                 showErrorMessage("Integrity constraint violation: " + e.getMessage());
                 // new Alert(Alert.AlertType.ERROR, "Database Error: " + e.getMessage()).show();
@@ -191,7 +190,7 @@ public class EmployeePageController implements Initializable {
                 //  new Alert(Alert.AlertType.ERROR, "SQL Error: " + e.getMessage()).show();
             } catch (Exception e) {
                 e.printStackTrace();
-                showErrorMessage("Error occurred while adding!");
+                showErrorMessage("Failed to update employee!");
             }
         }
     }
@@ -212,18 +211,15 @@ public class EmployeePageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
             try {
-                boolean isDeleted = new EmployeeModel().deleteEmployee(new EmployeeDto(id));
-                if (isDeleted) {
+                employeeBO.deleteEmployee(id);
                     showSuccessMessage("Employee deleted successfully!");
                     loadEmployeeTable();
                     clearFields();
                     setGeneratedEmployeeId();
-                } else {
-                    showErrorMessage("Failed to delete employee!");
-                }
+
             } catch (Exception e) {
                 e.printStackTrace();
-                showErrorMessage("Error occurred while deleting!");
+                showErrorMessage("Failed to delete employee!");
             }
         }
     }
@@ -274,7 +270,7 @@ public class EmployeePageController implements Initializable {
 
     private void setNoOfEmployee() {
         try {
-            int count = new EmployeeModel().getEmployeeCount();
+            int count = employeeBO.getEmployeeCount();
             noOfEmployee.setText(String.valueOf(count));
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -309,7 +305,7 @@ public class EmployeePageController implements Initializable {
 
     private void setGeneratedEmployeeId() {
         try {
-            String lastId = new EmployeeModel().getLastEmployeeId();
+            String lastId = employeeBO.getLastEmployeeId();
             int newIdNum = 1;
 
             if (lastId != null && lastId.startsWith("E")) {
@@ -339,8 +335,7 @@ public class EmployeePageController implements Initializable {
         colBankAccNo.setCellValueFactory(new PropertyValueFactory<>("bankAccountNo"));
 
         try {
-            EmployeeModel employeeModel = new EmployeeModel();
-            ArrayList<EmployeeDto> employees = employeeModel.viewAllEmployee();
+            List<EmployeeDto> employees = employeeBO.getAllEmployees();
             if (employees != null && !employees.isEmpty()) {
                 showSuccessMessage("Employees found: " + employees.size());  // Log number of employees
                 ObservableList<EmployeeDto> employeeObservableList = FXCollections.observableArrayList(employees);
@@ -454,7 +449,7 @@ public class EmployeePageController implements Initializable {
         String licenseText = textLicenseNo.getText();
 
         try {
-            return new EmployeeModel().isLicenseExists(licenseText);
+            return employeeBO.isLicenseExists(licenseText);
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
@@ -507,8 +502,8 @@ public class EmployeePageController implements Initializable {
         }
 
         try {
-            EmployeeModel employeeModel = new EmployeeModel();
-            ArrayList<EmployeeDto> employees = employeeModel.searchEmployee(searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText);
+
+           List<EmployeeDto> employees =employeeBO.searchEmployee(searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText, searchText);
             ObservableList<EmployeeDto> filteredList = FXCollections.observableArrayList();
 
             for (EmployeeDto emp : employees) {

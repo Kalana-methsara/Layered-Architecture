@@ -1,8 +1,11 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.EmployeeBO;
 import com.lankaice.project.dto.EmployeeDto;
 import com.lankaice.project.dto.UserDto;
-import com.lankaice.project.model.EmployeeModel;
+import com.lankaice.project.entity.Employee;
 import com.lankaice.project.model.UserModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -19,6 +22,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AdminManagePageController implements Initializable {
@@ -219,8 +223,8 @@ public class AdminManagePageController implements Initializable {
         }
 
         try {
-            EmployeeModel employeeModel = new EmployeeModel();
-            EmployeeDto employee = employeeModel.searchbyId(employeeId);
+             final EmployeeBO employeeBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.EMPLOYEE);
+            Employee employee = employeeBO.searchById(employeeId);
 
             if (employee != null) {
                 String employeeDetails =
@@ -260,8 +264,8 @@ public class AdminManagePageController implements Initializable {
         }
 
         try {
-            EmployeeModel employeeModel = new EmployeeModel();
-            ArrayList<EmployeeDto> matchedEmployees = employeeModel.searchByName(name);
+            final EmployeeBO employeeBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.EMPLOYEE);
+         List<EmployeeDto> matchedEmployees = employeeBO.searchByName(name);
 
             if (!matchedEmployees.isEmpty()) {
                 EmployeeDto employee = matchedEmployees.get(0);

@@ -1,12 +1,14 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.InventoryCartBO;
+import com.lankaice.project.bo.custom.RawMaterialBO;
 import com.lankaice.project.dto.RawMaterialsDto;
 import com.lankaice.project.dto.Session;
 import com.lankaice.project.dto.SupplierDto;
 import com.lankaice.project.dto.UserDto;
 import com.lankaice.project.dto.tm.CartItemTM;
-import com.lankaice.project.model.InventoryCartModel;
-import com.lankaice.project.model.RawMaterialModel;
 import com.lankaice.project.model.SupplierModel;
 import com.lankaice.project.util.SendMail;
 import javafx.application.Platform;
@@ -27,7 +29,6 @@ import javax.mail.MessagingException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -35,7 +36,7 @@ import java.util.ResourceBundle;
 public class InventoryPageController implements Initializable {
 
     @FXML
-    private  ImageView editPrice;
+    private ImageView editPrice;
     @FXML
     private ComboBox<RawMaterialsDto> cmbItemId;
     @FXML
@@ -74,6 +75,9 @@ public class InventoryPageController implements Initializable {
     private TextField txtAddToCartQty;
 
     private final ObservableList<CartItemTM> cartItemList = FXCollections.observableArrayList();
+    private final InventoryCartBO inventoryCartBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.INVENTORY_CART);
+    private final RawMaterialBO rawMaterialBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.RAW_MATERIAL);
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -112,16 +116,13 @@ public class InventoryPageController implements Initializable {
                 btnCompleted.setOnAction(e -> {
                     CartItemTM item = getTableView().getItems().get(getIndex());
                     try {
-                        boolean isCompleted = RawMaterialModel.updateMaterialQtyAfterPurchase(String.valueOf(item.getMaterialId()), item.getQuantity());
-                        boolean isCancelled = InventoryCartModel.removeCartItem(item.getCartId());
-                        if (isCancelled && isCompleted) {
-                            showAlert(Alert.AlertType.INFORMATION, "Cart item completed successfully.");
-                            clearAll();
-                        } else {
-                            showAlert(Alert.AlertType.WARNING, "Failed to complete cart item.");
-                        }
+                        boolean isCompleted = rawMaterialBO.updateMaterialQtyAfterPurchase(item.getMaterialId(), item.getQuantity());
+                        inventoryCartBO.deleteInventoryCart(String.valueOf(item.getCartId()));
+                        showAlert(Alert.AlertType.INFORMATION, "Cart item completed successfully.");
+                        clearAll();
+
                     } catch (SQLException | ClassNotFoundException ex) {
-                        showAlert(Alert.AlertType.ERROR, "Error completing cart item: " + ex.getMessage());
+                        showAlert(Alert.AlertType.WARNING, "Failed to complete cart item.");
                     }
                 });
 
@@ -139,32 +140,26 @@ public class InventoryPageController implements Initializable {
                             return;
                         }
 
-                        boolean isUpdated = InventoryCartModel.updateCartItem(item,newQty);
-                        if (isUpdated) {
-                            showAlert(Alert.AlertType.INFORMATION, "Cart item updated successfully.");
-                            loadTable();
-                        } else {
-                            showAlert(Alert.AlertType.WARNING, "Failed to update cart item.");
-                        }
+                        inventoryCartBO.updateCartItem(item, newQty);
+                        showAlert(Alert.AlertType.INFORMATION, "Cart item updated successfully.");
+                        loadTable();
+
                     } catch (NumberFormatException ex) {
                         showAlert(Alert.AlertType.WARNING, "Please enter a valid number for quantity.");
                     } catch (SQLException | ClassNotFoundException ex) {
-                        showAlert(Alert.AlertType.ERROR, "Error updating cart item: " + ex.getMessage());
+                        showAlert(Alert.AlertType.WARNING, "Failed to update cart item.");
                     }
                 });
 
                 btnCancelled.setOnAction(e -> {
                     CartItemTM item = getTableView().getItems().get(getIndex());
                     try {
-                        boolean isCancelled = InventoryCartModel.removeCartItem(item.getCartId());
-                        if (isCancelled) {
-                            showAlert(Alert.AlertType.INFORMATION, "Cart item cancelled successfully.");
-                            loadTable();
-                        } else {
-                            showAlert(Alert.AlertType.WARNING, "Failed to cancel cart item.");
-                        }
+                        inventoryCartBO.deleteInventoryCart(String.valueOf(item.getCartId()));
+                        showAlert(Alert.AlertType.INFORMATION, "Cart item cancelled successfully.");
+                        loadTable();
+
                     } catch (SQLException | ClassNotFoundException ex) {
-                        showAlert(Alert.AlertType.ERROR, "Error canceling cart item: " + ex.getMessage());
+                        showAlert(Alert.AlertType.WARNING, "Failed to cancel cart item.");
                     }
                 });
             }
@@ -189,7 +184,7 @@ public class InventoryPageController implements Initializable {
 
     public void loadTable() {
         try {
-            ArrayList<CartItemTM> cartItems = new InventoryCartModel().getAll();
+            List<CartItemTM> cartItems = inventoryCartBO.getAllInventoryCart();
             tblCart.setItems(FXCollections.observableArrayList(cartItems));
         } catch (Exception e) {
             e.printStackTrace();
@@ -219,7 +214,7 @@ public class InventoryPageController implements Initializable {
     private void loadItemsForSupplier(String supplierId) {
         try {
             clearFields();
-            List<RawMaterialsDto> itemList = RawMaterialModel.getItemsBySupplier(supplierId);
+            List<RawMaterialsDto> itemList = rawMaterialBO.getItemsBySupplier(supplierId);
             cmbItemId.setItems(FXCollections.observableArrayList(itemList));
         } catch (SQLException | ClassNotFoundException e) {
             showAlert(Alert.AlertType.ERROR, "Error loading items: " + e.getMessage());
@@ -275,19 +270,19 @@ public class InventoryPageController implements Initializable {
         );
 
         try {
-            if (InventoryCartModel.saveCartItem(cartItem)) {
-                cartItemList.add(cartItem);
-                updateNetTotalLabel();
-                new SendEmailSupplier(
-                        lblSupplierEmail.getText(),
-                        lblSupplierName.getText(),
-                        lblItemName.getText(),
-                        selectedItem.getMaterialId(),
-                        qtyText
-                ).start();
-                clearAll();
-                loadSuppliers();
-            }
+            inventoryCartBO.saveInventoryCart(cartItem);
+            cartItemList.add(cartItem);
+            updateNetTotalLabel();
+            new SendEmailSupplier(
+                    lblSupplierEmail.getText(),
+                    lblSupplierName.getText(),
+                    lblItemName.getText(),
+                    selectedItem.getMaterialId(),
+                    qtyText
+            ).start();
+            clearAll();
+            loadSuppliers();
+
         } catch (SQLException | ClassNotFoundException e) {
             showAlert(Alert.AlertType.ERROR, "Failed to save cart item: " + e.getMessage());
         }
@@ -319,7 +314,7 @@ public class InventoryPageController implements Initializable {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.YES) {
-                boolean isUpdated = RawMaterialModel.updateMaterialPrice(selectedItem.getMaterialId(), newPrice);
+                boolean isUpdated = rawMaterialBO.updateMaterialPrice(selectedItem.getMaterialId(), newPrice);
                 if (isUpdated) {
                     lblItemPrice.setEditable(false);
                     clearAll();
@@ -330,7 +325,7 @@ public class InventoryPageController implements Initializable {
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Invalid price value!");
         } catch (Exception e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error occurred while updating price.");
         }
     }

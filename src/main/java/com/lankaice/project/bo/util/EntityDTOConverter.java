@@ -1,13 +1,8 @@
 package com.lankaice.project.bo.util;
 
-import com.lankaice.project.dto.AttendanceDto;
-import com.lankaice.project.dto.BookingDto;
-import com.lankaice.project.dto.CustomerDto;
-import com.lankaice.project.dto.EmployeeDto;
-import com.lankaice.project.entity.Attendance;
-import com.lankaice.project.entity.Booking;
-import com.lankaice.project.entity.Customer;
-import com.lankaice.project.entity.Employee;
+import com.lankaice.project.dto.*;
+import com.lankaice.project.dto.tm.CartItemTM;
+import com.lankaice.project.entity.*;
 
 public class EntityDTOConverter {
     public Customer getCustomer(CustomerDto dto) {
@@ -129,4 +124,45 @@ public class EntityDTOConverter {
                 dto.getLicenseNumber()
         );
     }
+    public InventoryCart getInventoryCart(CartItemTM dto) {
+        if (dto == null) return null;
+
+        return new InventoryCart(
+                dto.getCartId(),
+                dto.getSupplierId(),
+                dto.getMaterialId(),
+                dto.getName(),
+                dto.getUnitType(),
+                dto.getUnitPrice(),
+                dto.getQuantity(),
+                dto.getTotal()
+        );
+    }
+
+    public CartItemTM getInventoryCartDto(InventoryCart entity) {
+        if (entity == null) return null;
+
+        return new CartItemTM(
+                entity.getCartId(),
+                entity.getSupplierId(),
+                entity.getMaterialId(),
+                entity.getName(),
+                entity.getUnitType(),
+                entity.getUnitPrice(),
+                entity.getQuantity(),
+                entity.getTotal()
+        );
+    }
+    public RawMaterialsDto getRawMaterialsDto(RawMaterials entity) {
+        return new RawMaterialsDto(
+                entity.getMaterialId(),
+                entity.getSupplierId(),
+                entity.getName(),
+                entity.getUnitType(),
+                entity.getUnitCost(),
+                entity.getLastUpdate(),
+                entity.getQuantityAvailable()
+        );
+    }
+
 }
