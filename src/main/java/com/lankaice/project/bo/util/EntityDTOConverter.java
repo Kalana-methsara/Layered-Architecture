@@ -1,9 +1,13 @@
 package com.lankaice.project.bo.util;
 
 import com.lankaice.project.dto.AttendanceDto;
+import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.dto.CustomerDto;
+import com.lankaice.project.dto.EmployeeDto;
 import com.lankaice.project.entity.Attendance;
+import com.lankaice.project.entity.Booking;
 import com.lankaice.project.entity.Customer;
+import com.lankaice.project.entity.Employee;
 
 public class EntityDTOConverter {
     public Customer getCustomer(CustomerDto dto) {
@@ -56,6 +60,73 @@ public class EntityDTOConverter {
                 attendance.getStatus(),
                 attendance.getInTime(),
                 attendance.getOutTime()
+        );
+    }
+
+    public BookingDto getBookingDto(Booking booking) {
+        if (booking == null) return null;
+
+        return new BookingDto(
+                booking.getBookingId(),
+                booking.getCustomerId(),
+                booking.getProductId(),
+                booking.getRequestDate(),
+                booking.getRequestTime(),
+                booking.getQuantity(),
+                booking.getStatus()
+        );
+    }
+
+    public Booking getBooking(BookingDto dto) {
+        if (dto == null) return null;
+
+        return new Booking(
+                dto.getBookingId(),
+                dto.getCustomerId(),
+                dto.getProductId(),
+                dto.getRequestDate(),
+                dto.getRequestTime(),
+                dto.getQuantity(),
+                dto.getStatus()
+        );
+    }
+    public EmployeeDto getEmployeeDto(Employee employee) {
+        if (employee == null) return null;
+
+        return new EmployeeDto(
+                employee.getEmployeeId(),
+                employee.getName(),
+                employee.getNic(),
+                employee.getContact(),
+                employee.getEmail(),
+                employee.getJobRole(),
+                employee.getAddress(),
+                employee.getJoinDate(),
+                employee.getDateOfBirth(),
+                employee.getGender(),
+                employee.getBankAccountNo(),
+                employee.getBankBranch(),
+                employee.getLicenseNumber()
+        );
+    }
+
+    public Employee getEmployee(EmployeeDto dto) {
+        if (dto == null) return null;
+
+        return new Employee(
+                dto.getEmployeeId(),
+                dto.getName(),
+                dto.getNic(),
+                dto.getContact(),
+                dto.getEmail(),
+                dto.getJobRole(),
+                dto.getAddress(),
+                dto.getJoinDate(),
+                dto.getDateOfBirth(),
+                dto.getGender(),
+                dto.getBankAccountNo(),
+                dto.getBankBranch(),
+                dto.getLicenseNumber()
         );
     }
 }

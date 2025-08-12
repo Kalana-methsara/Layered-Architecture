@@ -2,10 +2,10 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.BookingBO;
 import com.lankaice.project.bo.custom.CustomerBO;
 import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.dto.BookingRow;
-import com.lankaice.project.model.BookingModel;
 import com.lankaice.project.model.ProductModel;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -60,8 +60,8 @@ public class BookingPageController implements Initializable {
             col26, col27, col28, col29, col30, col31;
 
     private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
+    private final BookingBO bookingBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.BOOKING);
     private final ProductModel productModel = new ProductModel();
-    private final BookingModel bookingModel = new BookingModel();
 
     private final List<TableColumn<BookingRow, String>> firstTableColumns = new ArrayList<>();
     private final List<TableColumn<BookingRow, String>> secondTableColumns = new ArrayList<>();
@@ -158,7 +158,7 @@ public class BookingPageController implements Initializable {
         bookingsTable11.clear();
 
         try {
-            ArrayList<BookingDto> bookings = bookingModel.getAllBookings();
+            List<BookingDto> bookings = bookingBO.getAllBookings();
             for (BookingDto booking : bookings) {
                 LocalDate date = booking.getRequestDate().toLocalDate();
                 if (YearMonth.from(date).equals(currentMonth)) {
@@ -191,26 +191,26 @@ public class BookingPageController implements Initializable {
 
     private String getCustomerName(String customerId) {
         try {
-            return bookingModel.getCustomerNameById(customerId);
+            return bookingBO.getCustomerNameById(customerId);
         } catch (Exception e) {
             return "Unknown";
         }
     }
 
     public void btnAddOnAction(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        String customerId = textCustomerId.getText().trim();
-        String productId = textProductId.getValue().trim();
-        String date = String.valueOf(textDate.getValue()).trim();
-        String time = textTime.getText().trim();
-        String qtyStr = textProductQty.getText().trim();
-        String status = textProductStatus.getValue().trim();
+        String customerId = textCustomerId.getText();
+        String productId = textProductId.getValue();
+        String date = String.valueOf(textDate.getValue());
+        String time = textTime.getText();
+        String qtyStr = textProductQty.getText();
+        String status = textProductStatus.getValue();
 
-
-        if (customerId.isEmpty() || productId == null || date == null || time.isEmpty() || qtyStr.isEmpty() || status == null) {
+        System.out.println(customerId+productId+date+time+qtyStr+status);
+        if (customerId.isEmpty() || productId == null || date == null || time==null || qtyStr.isEmpty() || status == null) {
             showAlert(Alert.AlertType.WARNING, "Please fill all fields before updating.");
             return;
         }
-        if (bookingModel.isDuplicate(customerId, date)) {
+        if (bookingBO.isDuplicateBooking(customerId, date)) {
             showAlert(Alert.AlertType.WARNING, "Duplicate booking found for this customer on the given date.");
             return;
         }
@@ -219,16 +219,13 @@ public class BookingPageController implements Initializable {
         try {
             int quantity = Integer.parseInt(qtyStr);
             BookingDto updatedBooking = new BookingDto(customerId, productId, date.toString(), time, quantity, status);
-boolean isAdd = bookingModel.addBooking(updatedBooking);
-            if (isAdd) {
-                showAlert(Alert.AlertType.INFORMATION, "Booking updated successfully.");
-                clearFields();
-                loadBookingsForMonth();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Failed to save booking.");
-            }
+            bookingBO.saveBooking(updatedBooking);
+            showAlert(Alert.AlertType.INFORMATION, "Booking save successfully.");
+            clearFields();
+            loadBookingsForMonth();
+
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR,"An error occurred while saved the booking.");
+            showAlert(Alert.AlertType.ERROR, "Failed to save booking.");
             e.printStackTrace();
 
         }
@@ -246,16 +243,13 @@ boolean isAdd = bookingModel.addBooking(updatedBooking);
         String date = dateValue.toString();
 
         try {
-            boolean isDelete = bookingModel.deleteBooking(customerId, date);
-            if (isDelete) {
-                showAlert(Alert.AlertType.INFORMATION, "Booking deleted successfully.");
-                clearFields();
-                loadBookingsForMonth();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Failed to delete booking.");
-            }
+            bookingBO.deleteBooking(customerId, date);
+            showAlert(Alert.AlertType.INFORMATION, "Booking deleted successfully.");
+            clearFields();
+            loadBookingsForMonth();
+
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "An error occurred while deleting the booking.");
+            showAlert(Alert.AlertType.ERROR, "Failed to delete booking.");
             e.printStackTrace(); // Optional: for debugging purposes
         }
     }
@@ -282,16 +276,14 @@ boolean isAdd = bookingModel.addBooking(updatedBooking);
         try {
             int quantity = Integer.parseInt(qtyStr);
             BookingDto updatedBooking = new BookingDto(customerId, productId, date.toString(), time, quantity, status);
-boolean isUpdated = bookingModel.updateBooking(updatedBooking);
-            if (isUpdated) {
+            bookingBO.updateBooking(updatedBooking);
                 showAlert(Alert.AlertType.INFORMATION, "Booking updated successfully.");
                 clearFields();
                 loadBookingsForMonth();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Failed to update booking.");
-            }
+
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Invalid quantity or data.");
+            showAlert(Alert.AlertType.ERROR, "Failed to update booking.");
+            e.printStackTrace();
         }
     }
 
@@ -345,11 +337,11 @@ boolean isUpdated = bookingModel.updateBooking(updatedBooking);
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type, message, ButtonType.OK);
         alert.initStyle(StageStyle.UNDECORATED);
-        DialogPane pane = alert.getDialogPane();
-        pane.setStyle(type == Alert.AlertType.INFORMATION
+        alert.initOwner(textCustomerId.getScene().getWindow()); // Show in front
+        alert.getDialogPane().setStyle(type == Alert.AlertType.INFORMATION
                 ? "-fx-border-color: blue; -fx-border-width: 2px;"
                 : "-fx-border-color: red; -fx-border-width: 2px;");
-        alert.show();
+        alert.showAndWait(); // Wait until dismissed
     }
 
     public void setData(MouseEvent mouseEvent) throws SQLException, ClassNotFoundException {
@@ -398,7 +390,7 @@ boolean isUpdated = bookingModel.updateBooking(updatedBooking);
 
                 try {
                     // Load booking based on customer ID and date
-                    BookingDto booking = bookingModel.getBookingByCustomerIdAndDate(customerId, selectedDate.toString(), quantity);
+                    BookingDto booking = bookingBO.getBookingByCustomerIdAndDate(customerId, selectedDate.toString(), quantity);
 
                     if (booking != null) {
                         textProductId.setValue(booking.getProductId());

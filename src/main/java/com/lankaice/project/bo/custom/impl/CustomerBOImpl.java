@@ -5,7 +5,6 @@ import com.lankaice.project.bo.exception.DuplicateException;
 import com.lankaice.project.bo.exception.InUseException;
 import com.lankaice.project.bo.exception.NotFoundException;
 import com.lankaice.project.bo.util.EntityDTOConverter;
-import com.lankaice.project.dao.DAOFactory;
 import com.lankaice.project.dao.custom.CustomerDAO;
 import com.lankaice.project.dao.custom.OrdersDAO;
 import com.lankaice.project.dao.util.DAOFactoryImpl;
@@ -94,7 +93,7 @@ public class CustomerBOImpl implements CustomerBO {
     }
 
     @Override
-    public boolean deleteCustomer(String id) throws InUseException, Exception {
+    public void deleteCustomer(String id) throws InUseException, Exception {
         Optional<Customer> optionalCustomer = customerDAO.findById(id);
         if (optionalCustomer.isEmpty()) {
             throw new NotFoundException("Customer not found..!");
@@ -108,9 +107,7 @@ public class CustomerBOImpl implements CustomerBO {
         try {
             boolean delete = customerDAO.delete(id);
         } catch (Exception e) {
-            return false;
         }
-        return true;
     }
 
     @Override
