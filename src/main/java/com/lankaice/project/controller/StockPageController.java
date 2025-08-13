@@ -2,9 +2,9 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.ProductBO;
 import com.lankaice.project.bo.custom.StockBO;
 import com.lankaice.project.dto.StockDto;
-import com.lankaice.project.model.ProductModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -67,7 +67,7 @@ public class StockPageController implements Initializable {
     private Label txtYear;
 
     private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
-    private final ProductModel productModel = new ProductModel();
+    private final ProductBO productBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PRODUCT);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -86,7 +86,7 @@ public class StockPageController implements Initializable {
         txtYear.setText(String.valueOf(LocalDate.now().getYear()));
 
         try {
-            txtProductId.setItems(FXCollections.observableArrayList(productModel.getAllProductIds()));
+            txtProductId.setItems(FXCollections.observableArrayList(productBO.getAllProductIds()));
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Failed to load product IDs.");
         }
@@ -287,7 +287,7 @@ public class StockPageController implements Initializable {
         String id = txtProductId.getValue();
         if (id == null) return;
         try {
-            String name = productModel.findNameById(id);
+            String name = productBO.findNameById(id);
             textProductName.setText(name != null ? name : "Not Found");
         } catch (Exception e) {
             textProductName.setText("Error");

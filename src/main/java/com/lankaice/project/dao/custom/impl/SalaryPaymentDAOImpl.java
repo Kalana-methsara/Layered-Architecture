@@ -1,6 +1,8 @@
 package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.SalaryPaymentDAO;
+import com.lankaice.project.dto.OrderPaymentDto;
+import com.lankaice.project.entity.Salary;
 import com.lankaice.project.entity.SalaryPayment;
 
 import java.sql.SQLException;

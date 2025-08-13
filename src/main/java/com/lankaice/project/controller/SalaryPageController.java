@@ -1,7 +1,10 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.ProductBO;
+import com.lankaice.project.bo.custom.SalaryBO;
 import com.lankaice.project.dto.SalaryDto;
-import com.lankaice.project.model.SalaryModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,6 +24,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class SalaryPageController implements Initializable {
@@ -45,6 +49,9 @@ public class SalaryPageController implements Initializable {
 
     private SalaryDto selectedSalary;
 
+    private final SalaryBO salaryBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.SALARY);
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         textMonth.setItems(FXCollections.observableArrayList(
@@ -58,7 +65,7 @@ public class SalaryPageController implements Initializable {
         clearFields();
         clearFields();
         try {
-            boolean isDeleted = new SalaryModel().deleteAllSalary();
+            boolean isDeleted = salaryBO.deleteAllSalary();
             if (isDeleted) {
                 showAlert(Alert.AlertType.INFORMATION, "All salary records deleted successfully.");
             } else {
@@ -78,7 +85,7 @@ public class SalaryPageController implements Initializable {
         int year = Integer.parseInt(txtYear.getText());
 
         try {
-            boolean isGenerated = new SalaryModel().generateMonthlySalaries(selectedMonth, year);
+            boolean isGenerated = salaryBO.generateMonthlySalaries(selectedMonth, year);
             if (isGenerated) {
                 showAlert(Alert.AlertType.INFORMATION, "Salary records generated successfully.");
             } else {
@@ -102,8 +109,7 @@ public class SalaryPageController implements Initializable {
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         try {
-            SalaryModel salaryModel = new SalaryModel();
-            ArrayList<SalaryDto> salaryDtos = salaryModel.getAllSalaries(); // fixed method name
+            List<SalaryDto> salaryDtos = salaryBO.getAllSalaries(); // fixed method name
             ObservableList<SalaryDto> list = FXCollections.observableArrayList(salaryDtos);
             tableView.setItems(list);
         } catch (SQLException | ClassNotFoundException e) {
@@ -130,7 +136,7 @@ public class SalaryPageController implements Initializable {
     public void btnDeleteEmployeeOnAction(ActionEvent event) {
         if (selectedSalary != null) {
             try {
-                boolean isDeleted = new SalaryModel().deleteSalary(
+                boolean isDeleted = salaryBO.deleteSalary(
                         selectedSalary.getEmployeeId(),
                         selectedSalary.getPayMonth(),
                         selectedSalary.getPayYear()
@@ -191,7 +197,7 @@ public class SalaryPageController implements Initializable {
                 selectedSalary.setNetSalary(net);
                 selectedSalary.setStatus(status);
 
-                boolean isUpdated = new SalaryModel().updateSalary(selectedSalary);
+                boolean isUpdated =salaryBO.updateSalary(selectedSalary);
                 if (isUpdated) {
                     textNetAmount.setText(String.valueOf(net));
                     showAlert(Alert.AlertType.INFORMATION, "Salary updated successfully.");

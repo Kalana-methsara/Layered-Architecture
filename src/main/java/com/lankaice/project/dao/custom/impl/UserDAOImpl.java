@@ -3,7 +3,7 @@ package com.lankaice.project.dao.custom.impl;
 import com.lankaice.project.dao.custom.UserDAO;
 import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.db.DBConnection;
-import com.lankaice.project.dto.UserDto;
+import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.User;
 
 import java.sql.Connection;

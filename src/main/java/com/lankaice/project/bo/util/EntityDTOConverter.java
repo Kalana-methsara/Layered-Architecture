@@ -216,5 +216,75 @@ public class EntityDTOConverter {
                 entity.getTime()
         );
     }
+    public ProductDto getProductDTO(Product entity) {
+        if (entity == null) return null;
+        return new ProductDto(
+                entity.getProductId(),
+                entity.getName(),
+                entity.getWeight(),
+                entity.getPricePerUnit()
+        );
+    }
 
+    public Product getProduct(ProductDto dto) {
+        if (dto == null) return null;
+        return new Product(
+                dto.getProductId(),
+                dto.getName(),
+                dto.getWeight(),
+                dto.getPricePerUnit()
+        );
+    }
+    public Supplier getSupplier(SupplierDto dto) {
+        if (dto == null) return null;
+        return new Supplier(
+                dto.getSupplierId(),
+                dto.getName(),
+                dto.getNic(),
+                dto.getContact(),
+                dto.getEmail(),
+                dto.getAddress()
+        );
+    }
+
+    public SupplierDto getSupplierDto(Supplier entity) {
+        if (entity == null) return null;
+        return new SupplierDto(
+                entity.getSupplierId(),
+                entity.getName(),
+                entity.getNic(),
+                entity.getContact(),
+                entity.getEmail(),
+                entity.getAddress()
+        );
+    }
+    public OrderPaymentDto getOrderPaymentDto(OrderPayment entity) {
+        if (entity == null) return null;
+        return new OrderPaymentDto(
+                entity.getPaymentId(),
+                entity.getOrderId(),
+                entity.getPaymentMethod(),
+                entity.getItemCount(),
+                entity.getSubtotal(),
+                entity.getDiscount(),
+                entity.getNetTotal(),
+                entity.getPaymentDate(),
+                entity.getStatus()
+        );
+    }
+
+    public OrderPayment getOrderPayment(OrderPaymentDto dto) {
+        if (dto == null) return null;
+        return new OrderPayment(
+                dto.getPaymentId(),
+                dto.getOrderId(),
+                dto.getPaymentMethod(),
+                dto.getItemCount(),
+                dto.getSubtotal(),
+                dto.getDiscount(),
+                dto.getNetTotal(),
+                dto.getPaymentDate(),
+                dto.getStatus()
+        );
+    }
 }

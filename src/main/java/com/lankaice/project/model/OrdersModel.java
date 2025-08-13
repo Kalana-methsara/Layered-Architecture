@@ -2,6 +2,7 @@ package com.lankaice.project.model;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.ProductBO;
 import com.lankaice.project.bo.custom.StockBO;
 import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.db.DBConnection;
@@ -21,8 +22,8 @@ import java.util.ArrayList;
 public class OrdersModel {
 
     private final OrderDetailsModel orderDetailsModel = new OrderDetailsModel();
-    private final ProductModel productModel= new ProductModel();
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
+    private final ProductBO productBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PRODUCT);
     private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
 
     // View all orders
@@ -178,7 +179,7 @@ public class OrdersModel {
     }
 
     public boolean updateOrderStatus(int orderId, String productName, String newStatus) throws SQLException, ClassNotFoundException {
-        String productId = productModel.findIdByName(productName);
+        String productId = productBO.findIdByName(productName);
         String sql = "UPDATE PendingOrder SET status = ? WHERE order_id = ? AND product_id = ?";
         return SQLUtil.execute(sql, newStatus, orderId, productId); // ✅ Correct order
     }

@@ -2,8 +2,7 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.InventoryCartDAO;
 import com.lankaice.project.dao.util.SQLUtil;
-import com.lankaice.project.dto.tm.CartItemTM;
-import com.lankaice.project.entity.Customer;
+import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.InventoryCart;
 
 import java.sql.ResultSet;

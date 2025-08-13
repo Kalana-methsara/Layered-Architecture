@@ -2,7 +2,7 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.StockDAO;
 import com.lankaice.project.dao.util.SQLUtil;
-import com.lankaice.project.dto.StockDto;
+import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.Stock;
 
 import java.sql.ResultSet;

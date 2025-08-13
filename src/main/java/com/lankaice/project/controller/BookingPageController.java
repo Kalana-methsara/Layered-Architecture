@@ -4,9 +4,9 @@ import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.BookingBO;
 import com.lankaice.project.bo.custom.CustomerBO;
+import com.lankaice.project.bo.custom.ProductBO;
 import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.dto.BookingRow;
-import com.lankaice.project.model.ProductModel;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -61,7 +61,7 @@ public class BookingPageController implements Initializable {
 
     private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
     private final BookingBO bookingBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.BOOKING);
-    private final ProductModel productModel = new ProductModel();
+    private final ProductBO productBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PRODUCT);
 
     private final List<TableColumn<BookingRow, String>> firstTableColumns = new ArrayList<>();
     private final List<TableColumn<BookingRow, String>> secondTableColumns = new ArrayList<>();
@@ -99,7 +99,7 @@ public class BookingPageController implements Initializable {
         textProductStatus.setItems(FXCollections.observableArrayList("Pending", "Confirmed", "Cancel"));
         // Load product IDs
         try {
-            textProductId.setItems(FXCollections.observableArrayList(productModel.getAllProductIds()));
+            textProductId.setItems(FXCollections.observableArrayList(productBO.getAllProductIds()));
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Failed to load product IDs");
         }
@@ -315,7 +315,7 @@ public class BookingPageController implements Initializable {
         String id = textProductId.getValue();
         if (id == null) return;
         try {
-            String name = productModel.findNameById(id);
+            String name = productBO.findNameById(id);
             lblProductName.setText(name != null ? name : "Not Found");
         } catch (Exception e) {
             lblProductName.setText("Error");
@@ -398,7 +398,7 @@ public class BookingPageController implements Initializable {
                         textTime.setText(booking.getRequestTime().toString());
 
                         // Set product name label
-                        String productName = productModel.findNameById(booking.getProductId());
+                        String productName = productBO.findNameById(booking.getProductId());
                         lblProductName.setText(productName != null ? productName : "Unknown");
                     }
 

@@ -3,6 +3,8 @@ package com.lankaice.project.controller;
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.CustomerBO;
+import com.lankaice.project.bo.custom.OrderPaymentBO;
+import com.lankaice.project.bo.custom.ProductBO;
 import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.dto.tm.ProductTM;
@@ -64,8 +66,8 @@ public class ProductPageController implements Initializable {
     private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
     private final OrdersModel ordersModel = new OrdersModel();
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
-    private final ProductModel productModel = new ProductModel();
-    private final OrderPaymentModel orderPaymentModel = new OrderPaymentModel();
+    private final ProductBO productBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PRODUCT);
+    private final OrderPaymentBO orderPaymentBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ORDER_PAYMENT);
     private final BillPageController billPageController = new BillPageController();
 
     @Override
@@ -240,7 +242,7 @@ public class ProductPageController implements Initializable {
 
     private void loadProductLabels() {
         try {
-            List<ProductDto> products = productModel.getAllProducts();
+            List<ProductDto> products = productBO.getAllProducts();
             if (products.size() >= 4) {
                 Name1.setText(products.get(0).getName());
                 Price1.setText(String.valueOf(products.get(0).getPricePerUnit()));
@@ -283,7 +285,7 @@ public class ProductPageController implements Initializable {
             double subtotal = Double.parseDouble(subtotalLabel.getText());
             double discount = Double.parseDouble(discountLabel.getText());
             double total = Double.parseDouble(totalLabel.getText());
-            String nextPaymentId = orderPaymentModel.getNextPaymentId();
+            String nextPaymentId = orderPaymentBO.getNextPaymentId();
             String customerName = customerBO.findNameById(customerId);
 
             OrderPaymentDto ordersPaymentDto = new OrderPaymentDto(nextPaymentId, orderId, paymentMethod, itemsCount, subtotal, discount, total, LocalDateTime.now().toString(), "Success");
@@ -316,8 +318,8 @@ public class ProductPageController implements Initializable {
                 boolean isPlaced = ordersModel.placeOrder(ordersDto);
 
                 if (isPlaced) {
-                    orderPaymentModel.savePayment(ordersPaymentDto);
-                    if (orderPaymentModel.isPaymentCompleted(orderId)) {
+                    orderPaymentBO.addPayment(ordersPaymentDto);
+                    if (orderPaymentBO.isPaymentCompleted(orderId)) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION, "Order Placed Successfully!");
                         alert.initStyle(StageStyle.UNDECORATED);
                         alert.getDialogPane().setStyle("-fx-border-color: blue; -fx-border-width: 2px;");
@@ -374,7 +376,7 @@ public class ProductPageController implements Initializable {
 
     public void addLable() {
         try {
-            List<ProductDto> products = productModel.getAllProducts();
+            List<ProductDto> products = productBO.getAllProducts();
             if (products.size() >= 4) {
                 lblCode.setText("Code"); // Reset label
 
@@ -418,7 +420,7 @@ public class ProductPageController implements Initializable {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.YES) {
-                boolean isUpdated = productModel.updateProductPrice(code, newPrice);
+                boolean isUpdated = productBO.updateProductPrice(code, newPrice);
                 if (isUpdated) {
                     lblPrice.setEditable(false);
                     addLable(); // Refresh product labels

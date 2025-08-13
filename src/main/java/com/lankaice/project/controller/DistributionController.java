@@ -2,11 +2,11 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.ProductBO;
 import com.lankaice.project.bo.custom.StockBO;
 import com.lankaice.project.bo.custom.TransportBO;
 import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.TransportDto;
-import com.lankaice.project.model.ProductModel;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -107,7 +107,7 @@ public class DistributionController implements Initializable {
 
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
     private final TransportBO transportBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.TRANSPORT);
-    private final ProductModel productModel = new ProductModel();
+    private final ProductBO productBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PRODUCT);
     private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
 
     @Override
@@ -122,7 +122,7 @@ public class DistributionController implements Initializable {
             cmdStatus.setItems(FXCollections.observableArrayList("Pending", "Delivered", "Cancelled"));
             List<String> vehicles = vehicleBO.getActiveVehicleNumbers();
             cmdVehicalNumber.setItems(FXCollections.observableArrayList(vehicles));
-            List<String> productIds = productModel.getAllProductIds();
+            List<String> productIds = productBO.getAllProductIds();
             cmdProductId.setItems(FXCollections.observableArrayList(productIds));
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);

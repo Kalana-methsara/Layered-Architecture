@@ -1,7 +1,9 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.SalaryBO;
 import com.lankaice.project.dto.SalaryDto;
-import com.lankaice.project.model.SalaryModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -19,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -55,6 +58,8 @@ public class ViewSalaryController implements Initializable {
 
     private final ObservableList<SalaryDto> obListSal = FXCollections.observableArrayList();
     private FilteredList<SalaryDto> combinedFilteredList;
+    private final SalaryBO salaryBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.SALARY);
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -92,7 +97,12 @@ public class ViewSalaryController implements Initializable {
                 btnPaid.setOnAction(event -> {
                     SalaryDto salary = getTableView().getItems().get(getIndex());
                     if (!"COMPLETED".equals(salary.getStatus())) {
-                        boolean updated = new SalaryModel().updateSalaryStatus(salary.getSalaryId(), "COMPLETED");
+                        boolean updated = false;
+                        try {
+                            updated = salaryBO.updateSalaryStatus(salary.getSalaryId(), "COMPLETED");
+                        } catch (SQLException | ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
                         if (updated) {
                             salary.setStatus("COMPLETED");
                             showAlert(Alert.AlertType.INFORMATION,"Salary updated successfully");
@@ -104,7 +114,12 @@ public class ViewSalaryController implements Initializable {
                 btnCancel.setOnAction(event -> {
                     SalaryDto salary = getTableView().getItems().get(getIndex());
                     if (!"CANCELLED".equals(salary.getStatus())) {
-                        boolean updated = new SalaryModel().updateSalaryStatus(salary.getSalaryId(), "CANCELLED");
+                        boolean updated = false;
+                        try {
+                            updated = salaryBO.updateSalaryStatus(salary.getSalaryId(), "CANCELLED");
+                        } catch (SQLException | ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
                         if (updated) {
                             salary.setStatus("CANCELLED");
                             showAlert(Alert.AlertType.INFORMATION,"Salary canceled successfully");
@@ -141,9 +156,8 @@ public class ViewSalaryController implements Initializable {
 
     private void loadTableData() {
         obListSal.clear();
-        SalaryModel model = new SalaryModel();
         try {
-            List<SalaryDto> dtoList = model.getAllSalaries();
+            List<SalaryDto> dtoList = salaryBO.getAllSalaries();
             obListSal.addAll(dtoList);
         } catch (Exception e) {
             e.printStackTrace();

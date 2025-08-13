@@ -3,7 +3,7 @@ package com.lankaice.project.dao.custom.impl;
 import com.lankaice.project.dao.custom.SalaryDAO;
 import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.db.DBConnection;
-import com.lankaice.project.dto.SalaryDto;
+import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.Salary;
 
 import java.sql.PreparedStatement;

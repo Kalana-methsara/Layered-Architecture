@@ -1,6 +1,7 @@
 package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.PendingOrderDAO;
+import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.PendingOrder;
 
 import java.sql.SQLException;

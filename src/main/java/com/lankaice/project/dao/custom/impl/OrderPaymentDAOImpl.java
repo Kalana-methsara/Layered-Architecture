@@ -83,7 +83,7 @@ public class OrderPaymentDAOImpl implements OrderPaymentDAO {
     }
 
     @Override
-    public List<OrderPayment> searchPayments(String keyword) {
+    public List<OrderPayment> searchPayments(String keyword) throws SQLException, ClassNotFoundException {
         List<OrderPayment> list = new ArrayList<>();
         try {
             String sql = "SELECT * FROM Order_Payment WHERE " +

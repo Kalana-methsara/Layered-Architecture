@@ -1,10 +1,12 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.SupplierBO;
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.Session;
 import com.lankaice.project.dto.SupplierDto;
 import com.lankaice.project.dto.UserDto;
-import com.lankaice.project.model.SupplierModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
@@ -85,6 +87,9 @@ public class SupplierPageController implements Initializable {
     @FXML
     private TextField textSupplierId;
 
+    private final SupplierBO supplierBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.SUPPLIER);
+
+
     @FXML
     void SetData(MouseEvent event) {
         SupplierDto supplierDto = tableView.getSelectionModel().getSelectedItem();
@@ -113,7 +118,7 @@ public class SupplierPageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                boolean isAdded = new SupplierModel().addSupplier(supplierDto);
+                boolean isAdded = supplierBO.saveSupplier(supplierDto);
                 if (isAdded) {
                     showSuccessMessage("Supplier added successfully!");
                     loadSupplierTable();
@@ -172,7 +177,7 @@ public class SupplierPageController implements Initializable {
 
     private void setGeneretedSupplierId() {
         try {
-            String lastId = new SupplierModel().getLastSupplierId();
+            String lastId = supplierBO.getLastSupplierId();
             int newIdNum = 1;
             if (lastId != null && lastId.startsWith("S")) {
                 newIdNum = Integer.parseInt(lastId.substring(1)) + 1;
@@ -197,7 +202,7 @@ public class SupplierPageController implements Initializable {
     }
 
     private void setNoOfSupplier() throws SQLException, ClassNotFoundException {
-        int count = new SupplierModel().getSupplierCount();
+        int count = supplierBO.getSupplierCount();
         noOfSupplier.setText(String.valueOf(count));
     }
 
@@ -209,8 +214,7 @@ public class SupplierPageController implements Initializable {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
 
-        SupplierModel supplierModel = new SupplierModel();
-        ArrayList<SupplierDto> supplierDtos = supplierModel.getAllSuppliers();
+        List<SupplierDto> supplierDtos = supplierBO.getAllSuppliers();
         if (supplierDtos != null && !supplierDtos.isEmpty()) {
             showSuccessMessage("Suppliers loaded: " + supplierDtos.size());
             ObservableList<SupplierDto> supplierObservableList = FXCollections.observableArrayList(supplierDtos);
@@ -259,7 +263,7 @@ public class SupplierPageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                boolean isDeleted = new SupplierModel().deleteSupplier(id);
+                boolean isDeleted = supplierBO.deleteSupplier(id);
                 if (isDeleted) {
                     showSuccessMessage("Supplier deleted successfully!");
                     loadSupplierTable();
@@ -286,8 +290,7 @@ public class SupplierPageController implements Initializable {
             loadSupplierTable();
             return;
         }
-        SupplierModel supplierModel = new SupplierModel();
-        ArrayList<SupplierDto> supplierDtos = supplierModel.searchSupplier(searchText, searchText, searchText, searchText, searchText, searchText);
+        List<SupplierDto> supplierDtos = supplierBO.searchSupplier(searchText, searchText, searchText, searchText, searchText, searchText);
         ObservableList<SupplierDto> filteredList = FXCollections.observableArrayList();
 
         for (SupplierDto supplierDto : supplierDtos) {
@@ -325,7 +328,7 @@ public class SupplierPageController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                boolean isUpdated = new SupplierModel().updateSupplier(dto);
+                boolean isUpdated = supplierBO.updateSupplier(dto);
                 if (isUpdated) {
                     showSuccessMessage("Supplier updated successfully!");
                     loadSupplierTable();

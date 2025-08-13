@@ -2,9 +2,8 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.BookingDAO;
 import com.lankaice.project.dao.util.SQLUtil;
-import com.lankaice.project.dto.BookingDto;
+import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.Booking;
-import com.lankaice.project.entity.Customer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

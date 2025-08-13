@@ -2,8 +2,8 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.AttendanceDAO;
 import com.lankaice.project.dao.util.SQLUtil;
+import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.Attendance;
-import com.lankaice.project.entity.Customer;
 
 import java.sql.Date;
 import java.sql.ResultSet;

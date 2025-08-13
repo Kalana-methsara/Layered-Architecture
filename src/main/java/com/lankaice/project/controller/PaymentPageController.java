@@ -1,12 +1,15 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.OrderPaymentBO;
+import com.lankaice.project.bo.custom.SalaryBO;
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.OrderPaymentDto;
-import com.lankaice.project.model.OrderPaymentModel;
+import com.lankaice.project.entity.OrderPayment;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -74,7 +77,7 @@ public class PaymentPageController {
     @FXML
     private ComboBox<String> txtStatus;
 
-    private final OrderPaymentModel paymentModel = new OrderPaymentModel();
+    private final OrderPaymentBO orderPaymentBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ORDER_PAYMENT);
 
     @FXML
     public void initialize() throws SQLException, ClassNotFoundException {
@@ -101,7 +104,7 @@ public class PaymentPageController {
     }
 
     private void loadTableData() throws SQLException, ClassNotFoundException {
-        List<OrderPaymentDto> list = paymentModel.getAllPayment();
+        List<OrderPaymentDto> list = orderPaymentBO.getAllPayments();
         tableView.setItems(FXCollections.observableArrayList(list));
     }
 
@@ -118,15 +121,15 @@ public class PaymentPageController {
     }
 
     @FXML
-    void txtSearchOnAction(ActionEvent event) {
+    void txtSearchOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         String keyword = txtSearch.getText().trim();
-        List<OrderPaymentDto> list = paymentModel.searchPayments(keyword);
+        List<OrderPaymentDto> list = orderPaymentBO.searchPayments(keyword);
         tableView.setItems(FXCollections.observableArrayList(list));
     }
 
     @FXML
     void btnUpdateOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
-        OrderPaymentDto dto = new OrderPaymentDto(
+        OrderPayment dto = new OrderPayment(
                 txtId.getText(),
                 tableView.getSelectionModel().getSelectedItem().getOrderId(),
                 txtPaymentMethod.getValue(),
@@ -138,7 +141,7 @@ public class PaymentPageController {
                 txtStatus.getValue()
         );
 
-        boolean updated = paymentModel.updatePayment(dto);
+        boolean updated = orderPaymentBO.updatePayment(dto);
         if (updated) {
             loadTableData();
             clearFields();
@@ -148,7 +151,7 @@ public class PaymentPageController {
     @FXML
     void btnDeleteOnAction(ActionEvent event) throws SQLException, ClassNotFoundException {
         String id = txtId.getText();
-        boolean deleted = paymentModel.deletePayment(id);
+        boolean deleted = orderPaymentBO.deletePayment(id);
         if (deleted) {
             loadTableData();
             clearFields();

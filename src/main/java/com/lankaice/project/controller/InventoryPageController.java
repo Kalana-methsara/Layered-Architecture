@@ -4,12 +4,12 @@ import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.InventoryCartBO;
 import com.lankaice.project.bo.custom.RawMaterialBO;
+import com.lankaice.project.bo.custom.SupplierBO;
 import com.lankaice.project.dto.RawMaterialsDto;
 import com.lankaice.project.dto.Session;
 import com.lankaice.project.dto.SupplierDto;
 import com.lankaice.project.dto.UserDto;
 import com.lankaice.project.dto.tm.CartItemTM;
-import com.lankaice.project.model.SupplierModel;
 import com.lankaice.project.util.SendMail;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -77,6 +77,7 @@ public class InventoryPageController implements Initializable {
     private final ObservableList<CartItemTM> cartItemList = FXCollections.observableArrayList();
     private final InventoryCartBO inventoryCartBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.INVENTORY_CART);
     private final RawMaterialBO rawMaterialBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.RAW_MATERIAL);
+    private final SupplierBO supplierBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.SUPPLIER);
 
 
     @Override
@@ -204,7 +205,7 @@ public class InventoryPageController implements Initializable {
     private void loadSuppliers() {
         clearFields();
         try {
-            List<SupplierDto> supplierList = SupplierModel.getAllSupplier();
+            List<SupplierDto> supplierList = supplierBO.getAllSuppliers();
             cmbSupplierId.setItems(FXCollections.observableArrayList(supplierList));
         } catch (SQLException | ClassNotFoundException e) {
             showAlert(Alert.AlertType.ERROR, "Error loading suppliers: " + e.getMessage());
