@@ -1,5 +1,8 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.model.*;
 import javafx.collections.FXCollections;
@@ -15,6 +18,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -73,6 +77,7 @@ public class DashboardPageController implements Initializable {
     private final StockModel stockModel = new StockModel();
     private final TransportModel transportModel = new TransportModel();
     private final OrdersModel ordersModel = new OrdersModel();
+    private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -123,8 +128,7 @@ public class DashboardPageController implements Initializable {
         colCapacity.setCellValueFactory(new PropertyValueFactory<>("capacity"));
 
         try {
-            VehicleModel vehicleModel = new VehicleModel();
-            ArrayList<VehicleDto> vehicles = vehicleModel.activeVehicles();
+            List<VehicleDto> vehicles = vehicleBO.getAllVehicles();
             ObservableList<VehicleDto> observableList = FXCollections.observableArrayList(vehicles);
             tableVehical.setItems(observableList);
         } catch (SQLException | ClassNotFoundException e) {

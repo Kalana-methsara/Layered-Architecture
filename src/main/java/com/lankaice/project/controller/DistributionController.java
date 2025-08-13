@@ -1,10 +1,12 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.TransportDto;
 import com.lankaice.project.model.ProductModel;
 import com.lankaice.project.model.StockModel;
 import com.lankaice.project.model.TransportModel;
-import com.lankaice.project.model.VehicleModel;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -104,7 +106,7 @@ public class DistributionController implements Initializable {
     private TextField textTransportId;
 
     private final TransportModel transportModel = new TransportModel();
-    private final VehicleModel vehicleModel = new VehicleModel();
+    private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
     private final ProductModel productModel = new ProductModel();
     private final StockModel stockModel = new StockModel();
 
@@ -118,7 +120,7 @@ public class DistributionController implements Initializable {
         try {
             loadNextId();
             cmdStatus.setItems(FXCollections.observableArrayList("Pending","Delivered", "Cancelled"));
-            List<String> vehicles = vehicleModel.getActiveVehicle();
+            List<String> vehicles = vehicleBO.getActiveVehicleNumbers();
             cmdVehicalNumber.setItems(FXCollections.observableArrayList(vehicles));
             List<String> productIds = productModel.getAllProductIds();
             cmdProductId.setItems(FXCollections.observableArrayList(productIds));

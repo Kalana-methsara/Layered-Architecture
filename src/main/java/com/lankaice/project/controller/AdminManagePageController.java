@@ -2,11 +2,12 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.CustomerBO;
 import com.lankaice.project.bo.custom.EmployeeBO;
+import com.lankaice.project.bo.custom.UserBO;
 import com.lankaice.project.dto.EmployeeDto;
 import com.lankaice.project.dto.UserDto;
 import com.lankaice.project.entity.Employee;
-import com.lankaice.project.model.UserModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
@@ -70,8 +71,8 @@ public class AdminManagePageController implements Initializable {
 
     @FXML
     private TableColumn<UserDto, String> colRole;
+    private final UserBO userBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.USER);
 
-    private final UserModel userModel = new UserModel();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -99,8 +100,7 @@ public class AdminManagePageController implements Initializable {
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
 
         try {
-            UserModel userModel = new UserModel();
-            ArrayList<UserDto> users = userModel.viewAllUsers();
+            List<UserDto> users = userBO.getAllUsers();
             ObservableList<UserDto> observableList = FXCollections.observableArrayList(users);
             tableView.setItems(observableList);
         } catch (SQLException | ClassNotFoundException e) {
@@ -141,17 +141,15 @@ public class AdminManagePageController implements Initializable {
                     txtRole.getValue()
             );
 
-            boolean isAdded = new UserModel().addUser(user);
-            if (isAdded) {
+            boolean isAdded = userBO.saveUser(user);
+
                 loadAdminTable();
                 clearFields();
                 showSuccessMessage("User added successfully!");
-            } else {
-                showErrorMessage("Failed to add user.");
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorMessage("Error occurred while adding.");
+            showErrorMessage("Failed to add user.");
         }
     }
 
@@ -173,23 +171,20 @@ public class AdminManagePageController implements Initializable {
                     txtRole.getValue()
             );
 
-            boolean isUpdated = new UserModel().updateUser(user);
-            if (isUpdated) {
+            userBO.updateUser(user);
                 loadAdminTable();
                 clearFields();
                 showSuccessMessage("User updated successfully!");
-            } else {
-                showErrorMessage("Failed to update user.");
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorMessage("Error occurred while updating.");
+        showErrorMessage("Failed to update user.");
         }
     }
 
 
     public void btnDeleteAdminOnAction(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        if (userModel.isOnlyOneUserExists()) {
+        if (userBO.isOnlyOneUserExists()) {
             System.out.println("Only one user exists in the system.");
         }
 
@@ -200,17 +195,14 @@ public class AdminManagePageController implements Initializable {
         }
 
         try {
-            boolean isDeleted = new UserModel().deleteUser(userName);
-            if (isDeleted) {
+            userBO.deleteUser(userName);
                 loadAdminTable();
                 clearFields();
                 showSuccessMessage("User deleted successfully!");
-            } else {
-                showErrorMessage("Failed to delete user.");
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorMessage("Error occurred while deleting.");
+            showErrorMessage("Failed to delete user.");
         }
     }
 

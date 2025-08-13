@@ -1,7 +1,9 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.VehicleDto;
-import com.lankaice.project.model.VehicleModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -59,7 +61,7 @@ public class TransportPageController implements Initializable {
     private final double[] latitudes = {8.0269, 10.0083, 6.0184, 5.9485, 3.1399, 1.9779, 4.9271};
     private final double[] longitudes = {90.2170, 80.2492, 100.2423, 50.5350, 10.1026, 70.4303, 39.8612};
 
-    private final VehicleModel vehicleModel = new VehicleModel();
+    private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -100,8 +102,7 @@ public class TransportPageController implements Initializable {
 
     private void setVehicalLabels() {
         try {
-            VehicleModel vehicleModel = new VehicleModel();
-            ArrayList<VehicleDto> vehicles = vehicleModel.viewAllVehicles();
+            List<VehicleDto> vehicles = vehicleBO.getAllVehicles();
 
             for (int i = 0; i < Math.min(vehicles.size(), 7); i++) {
                 lblVehicleNumbers.get(i).setText(vehicles.get(i).getVehicleNumber());
@@ -120,8 +121,7 @@ public class TransportPageController implements Initializable {
         colModel.setCellValueFactory(new PropertyValueFactory<>("model"));
 
         try {
-            VehicleModel vehicleModel = new VehicleModel();
-            ArrayList<VehicleDto> vehicles = vehicleModel.viewAllVehicles();
+            List<VehicleDto> vehicles = vehicleBO.getAllVehicles();
             ObservableList<VehicleDto> observableList = FXCollections.observableArrayList(vehicles);
             tableVehical.setItems(observableList);
 
@@ -207,7 +207,7 @@ public class TransportPageController implements Initializable {
         }
 
         try {
-            vehicleModel.setActiveVehicle(vehicleNumber);
+            vehicleBO.setVehicleAsActive(vehicleNumber);
             showAlert(Alert.AlertType.INFORMATION, "Vehicle activated successfully!");
             loadVehicleTable();
             txtVehicle.setText("");
@@ -237,7 +237,7 @@ public class TransportPageController implements Initializable {
         }
 
         try {
-            vehicleModel.setUnderRepairVehicle(vehicleNumber);
+            vehicleBO.setVehicleAsUnderRepair(vehicleNumber);
             showAlert(Alert.AlertType.INFORMATION, "Vehicle marked as under repair successfully!");
             loadVehicleTable();
             txtVehicle.setText("");

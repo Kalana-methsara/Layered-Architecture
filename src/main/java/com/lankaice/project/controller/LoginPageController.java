@@ -1,8 +1,11 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.UserBO;
 import com.lankaice.project.dto.UserDto;
-import com.lankaice.project.model.UserModel;
 import com.lankaice.project.dto.Session;
+import com.lankaice.project.model.UserModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -10,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -50,6 +52,8 @@ public class LoginPageController {
 
     private boolean isPasswordVisible = false;
 
+    private final UserBO userBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.USER);
+
     @FXML
     private void initialize() {
         lblError.setVisible(false);
@@ -78,7 +82,7 @@ public class LoginPageController {
         preparedStatement.setString(2, password);
 
         ResultSet resultSet = preparedStatement.executeQuery();
-        UserDto user = UserModel.searchUser(userName, password);
+        UserDto user = userBO.searchUser(userName, password);
 
 
         if (resultSet.next()) {

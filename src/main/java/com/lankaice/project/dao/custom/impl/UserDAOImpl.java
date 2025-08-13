@@ -2,8 +2,12 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.UserDAO;
 import com.lankaice.project.dao.util.SQLUtil;
+import com.lankaice.project.db.DBConnection;
+import com.lankaice.project.dto.UserDto;
 import com.lankaice.project.entity.User;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,16 +18,27 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User searchUser(String userName, String password) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM User WHERE userName = ? AND password = ?";
-        ResultSet resultSet = SQLUtil.execute(sql, userName, password);
 
-        if (resultSet.next()) {
-            return new User(
-                    resultSet.getString("userName"),
-                    resultSet.getString("password"),
-                    resultSet.getString("name"),
-                    resultSet.getString("email"),
-                    resultSet.getString("role")
-            );
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, userName);
+            preparedStatement.setString(2, password);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return new User(
+                        resultSet.getString("userName"),
+                        resultSet.getString("password"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("role")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

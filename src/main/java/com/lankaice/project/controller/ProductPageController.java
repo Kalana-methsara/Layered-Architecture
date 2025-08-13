@@ -3,6 +3,7 @@ package com.lankaice.project.controller;
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.CustomerBO;
+import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.dto.tm.ProductTM;
 import com.lankaice.project.model.*;
@@ -62,7 +63,7 @@ public class ProductPageController implements Initializable {
     private final ObservableList<ProductTM> productList = FXCollections.observableArrayList();
     private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
     private final OrdersModel ordersModel = new OrdersModel();
-    private final VehicleModel vehicleModel = new VehicleModel();
+    private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
     private final ProductModel productModel = new ProductModel();
     private final OrderPaymentModel orderPaymentModel = new OrderPaymentModel();
     private final BillPageController billPageController = new BillPageController();
@@ -95,7 +96,7 @@ public class ProductPageController implements Initializable {
                 customerNames.add(c.toString()); // "C001 Kalana Methsara"
             }
 
-            List<String> vehicles = vehicleModel.getActiveVehicle();
+            List<String> vehicles = vehicleBO.getActiveVehicleNumbers();
 
             textCustomer.setItems(FXCollections.observableArrayList(customerNames));
             if (!customerNames.isEmpty()) {

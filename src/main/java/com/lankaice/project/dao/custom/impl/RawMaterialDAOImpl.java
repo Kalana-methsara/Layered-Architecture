@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RawMaterialDAOImpl implements RawMaterialDAO {
 
@@ -39,5 +40,30 @@ public class RawMaterialDAOImpl implements RawMaterialDAO {
     public boolean updateMaterialPrice(int materialId, double newPrice) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE Raw_Materials SET unit_cost = ?, lastUpdate = CURRENT_TIMESTAMP WHERE material_id = ?";
         return SQLUtil.execute(sql, newPrice, materialId);
+    }
+
+    @Override
+    public List<RawMaterials> getAll() throws SQLException, ClassNotFoundException {
+        return List.of();
+    }
+
+    @Override
+    public boolean save(RawMaterials rawMaterials) throws SQLException, ClassNotFoundException {
+        return false;
+    }
+
+    @Override
+    public boolean update(RawMaterials rawMaterials) throws SQLException, ClassNotFoundException {
+        return false;
+    }
+
+    @Override
+    public boolean delete(String id) throws SQLException, ClassNotFoundException {
+        return false;
+    }
+
+    @Override
+    public Optional<RawMaterials> findById(String id) throws SQLException, ClassNotFoundException {
+        return Optional.empty();
     }
 }

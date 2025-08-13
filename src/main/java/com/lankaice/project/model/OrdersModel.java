@@ -1,5 +1,8 @@
 package com.lankaice.project.model;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.OrderDetailsDto;
 import com.lankaice.project.dto.OrdersDto;
@@ -19,6 +22,7 @@ public class OrdersModel {
     private final OrderDetailsModel orderDetailsModel = new OrderDetailsModel();
     private final ProductModel productModel= new ProductModel();
     private final StockModel stockModel= new StockModel();
+    private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
 
     // View all orders
     public ArrayList<OrdersDto> viewAllOrders() throws SQLException, ClassNotFoundException {
@@ -129,8 +133,7 @@ public class OrdersModel {
 
             // Add delivery and update vehicle if vehicle is assigned
             if (dto.getVehicle_number() != null && !dto.getVehicle_number().isEmpty()) {
-                VehicleModel vModel = new VehicleModel();
-                String vehicleId = vModel.getVehicleId(dto.getVehicle_number());
+                String vehicleId = vehicleBO.getVehicleIdByNumber(dto.getVehicle_number());
 
                 boolean isDeliverySaved = SQLUtil.execute(
                         "INSERT INTO Delivery (order_id, delivery_date, delivery_time, delivery_address, delivery_status, vehicle_id) VALUES (?, ?, ?,?, ?, ?)",

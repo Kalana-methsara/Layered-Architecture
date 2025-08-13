@@ -4,7 +4,9 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class User {
     private String username;
     private String password;
