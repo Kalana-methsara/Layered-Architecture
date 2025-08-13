@@ -2,11 +2,11 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.StockBO;
+import com.lankaice.project.bo.custom.TransportBO;
 import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.TransportDto;
 import com.lankaice.project.model.ProductModel;
-import com.lankaice.project.model.StockModel;
-import com.lankaice.project.model.TransportModel;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -105,10 +105,10 @@ public class DistributionController implements Initializable {
     @FXML
     private TextField textTransportId;
 
-    private final TransportModel transportModel = new TransportModel();
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
+    private final TransportBO transportBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.TRANSPORT);
     private final ProductModel productModel = new ProductModel();
-    private final StockModel stockModel = new StockModel();
+    private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -119,7 +119,7 @@ public class DistributionController implements Initializable {
         }
         try {
             loadNextId();
-            cmdStatus.setItems(FXCollections.observableArrayList("Pending","Delivered", "Cancelled"));
+            cmdStatus.setItems(FXCollections.observableArrayList("Pending", "Delivered", "Cancelled"));
             List<String> vehicles = vehicleBO.getActiveVehicleNumbers();
             cmdVehicalNumber.setItems(FXCollections.observableArrayList(vehicles));
             List<String> productIds = productModel.getAllProductIds();
@@ -140,7 +140,7 @@ public class DistributionController implements Initializable {
     }
 
     private void loadNextId() throws SQLException, ClassNotFoundException {
-        String nextId = transportModel.getNextId();
+        String nextId = transportBO.getNextTransportId();
         textTransportId.setText(nextId);
     }
 
@@ -159,7 +159,7 @@ public class DistributionController implements Initializable {
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         try {
-            List<TransportDto> transportList = transportModel.getTransportByDate(selectedDate.toString());
+            List<TransportDto> transportList = transportBO.getTransportByDate(selectedDate.toString());
 
             transportList.sort((a, b) -> {
                 if (a.getDeliveryBeginTime() == null) return 1;
@@ -241,31 +241,25 @@ public class DistributionController implements Initializable {
                     location,
                     status
             );
-            if(status.equals("Delivered")){
-                boolean isQtyUpdated = stockModel.reduceQty(productId,quantity);
-                if(isQtyUpdated){
+            if (status.equals("Delivered")) {
+                boolean isQtyUpdated = stockBO.reduceQty(productId, quantity);
+                if (isQtyUpdated) {
                     showSuccessMessage("Successfully updated stock record.");
-                }else {
+                } else {
                     showErrorMessage("Failed to update stock record. Failed to add transport.");
                     return;
                 }
             }
 
-            boolean isSaved = transportModel.saveTransport(dto);
-            if (isSaved) {
-                showSuccessMessage("Transport added successfully.");
-                loadTable();
-                btnClearOnAction(null);
-            } else {
-                showErrorMessage("Failed to add transport.");
-            }
-
+            transportBO.saveTransport(dto);
+            showSuccessMessage("Transport added successfully.");
+            loadTable();
+            btnClearOnAction(null);
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorMessage("Error occurred while adding transport.");
+            showErrorMessage("Failed to add transport.");
         }
     }
-
 
 
     @FXML
@@ -297,17 +291,14 @@ public class DistributionController implements Initializable {
         }
 
         try {
-            boolean isDeleted = transportModel.deleteTransport(transportId);
-            if (isDeleted) {
-                showSuccessMessage("Transport deleted successfully.");
-                loadTable();
-                btnClearOnAction(null);
-            } else {
-                showErrorMessage("Failed to delete transport.");
-            }
+            transportBO.deleteTransport(transportId);
+            showSuccessMessage("Transport deleted successfully.");
+            loadTable();
+            btnClearOnAction(null);
+
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorMessage("Error occurred while deleting.");
+            showErrorMessage("Failed to delete transport.");
         }
     }
 
@@ -344,29 +335,26 @@ public class DistributionController implements Initializable {
                     location,
                     status
             );
-            if(status.equals("Delivered")){
-                boolean isQtyUpdated = stockModel.reduceQty(productId,quantity);
-                if(isQtyUpdated){
+            if (status.equals("Delivered")) {
+                boolean isQtyUpdated = stockBO.reduceQty(productId, quantity);
+                if (isQtyUpdated) {
                     showSuccessMessage("Successfully updated stock record.");
-                }else {
+                } else {
                     showErrorMessage("Failed to update stock record. Failed to update transport.");
                     return;
                 }
             }
 
-            boolean isUpdated = transportModel.updateTransport(dto);
-            if (isUpdated) {
-                showSuccessMessage("Transport updated successfully.");
-                loadTable();
-                btnClearOnAction(null);
-            } else {
-                showErrorMessage("Failed to update transport.");
-            }
+            transportBO.updateTransport(dto);
+            showSuccessMessage("Transport updated successfully.");
+            loadTable();
+            btnClearOnAction(null);
+
         } catch (NumberFormatException e) {
             showErrorMessage("Quantity must be numeric.");
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorMessage("Error occurred while updating transport.");
+            showErrorMessage("Failed to update transport.");
         }
     }
 

@@ -2,6 +2,7 @@ package com.lankaice.project.model;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.StockBO;
 import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.OrderDetailsDto;
@@ -21,8 +22,8 @@ public class OrdersModel {
 
     private final OrderDetailsModel orderDetailsModel = new OrderDetailsModel();
     private final ProductModel productModel= new ProductModel();
-    private final StockModel stockModel= new StockModel();
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
+    private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
 
     // View all orders
     public ArrayList<OrdersDto> viewAllOrders() throws SQLException, ClassNotFoundException {

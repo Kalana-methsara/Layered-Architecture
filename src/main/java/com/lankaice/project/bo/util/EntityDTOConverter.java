@@ -5,6 +5,7 @@ import com.lankaice.project.dto.tm.CartItemTM;
 import com.lankaice.project.entity.*;
 
 public class EntityDTOConverter {
+
     public Customer getCustomer(CustomerDto dto) {
         if (dto == null) return null;
         return new Customer(
@@ -18,7 +19,6 @@ public class EntityDTOConverter {
         );
     }
 
-    // Convert Entity -> DTO
     public CustomerDto getCustomerDto(Customer entity) {
         if (entity == null) return null;
         return new CustomerDto(
@@ -45,6 +45,7 @@ public class EntityDTOConverter {
                 dto.getOutTime()
         );
     }
+
     public AttendanceDto getAttendanceDto(Attendance attendance) {
         if (attendance == null) return null;
         return new AttendanceDto(
@@ -60,7 +61,6 @@ public class EntityDTOConverter {
 
     public BookingDto getBookingDto(Booking booking) {
         if (booking == null) return null;
-
         return new BookingDto(
                 booking.getBookingId(),
                 booking.getCustomerId(),
@@ -74,7 +74,6 @@ public class EntityDTOConverter {
 
     public Booking getBooking(BookingDto dto) {
         if (dto == null) return null;
-
         return new Booking(
                 dto.getBookingId(),
                 dto.getCustomerId(),
@@ -85,9 +84,9 @@ public class EntityDTOConverter {
                 dto.getStatus()
         );
     }
+
     public EmployeeDto getEmployeeDto(Employee employee) {
         if (employee == null) return null;
-
         return new EmployeeDto(
                 employee.getEmployeeId(),
                 employee.getName(),
@@ -107,7 +106,6 @@ public class EntityDTOConverter {
 
     public Employee getEmployee(EmployeeDto dto) {
         if (dto == null) return null;
-
         return new Employee(
                 dto.getEmployeeId(),
                 dto.getName(),
@@ -124,9 +122,9 @@ public class EntityDTOConverter {
                 dto.getLicenseNumber()
         );
     }
+
     public InventoryCart getInventoryCart(CartItemTM dto) {
         if (dto == null) return null;
-
         return new InventoryCart(
                 dto.getCartId(),
                 dto.getSupplierId(),
@@ -141,7 +139,6 @@ public class EntityDTOConverter {
 
     public CartItemTM getInventoryCartDto(InventoryCart entity) {
         if (entity == null) return null;
-
         return new CartItemTM(
                 entity.getCartId(),
                 entity.getSupplierId(),
@@ -153,6 +150,7 @@ public class EntityDTOConverter {
                 entity.getTotal()
         );
     }
+
     public RawMaterialsDto getRawMaterialsDto(RawMaterials entity) {
         return new RawMaterialsDto(
                 entity.getMaterialId(),
@@ -162,6 +160,60 @@ public class EntityDTOConverter {
                 entity.getUnitCost(),
                 entity.getLastUpdate(),
                 entity.getQuantityAvailable()
+        );
+    }
+
+
+    public Transport getTransport(TransportDto dto) {
+        if (dto == null) return null;
+        return new Transport(
+                dto.getTransportId(),
+                dto.getProductId(),
+                dto.getVehicleNumber(),
+                dto.getTransportDate(),
+                dto.getDeliveryBeginTime(),
+                dto.getDeliveryEndTime(),
+                dto.getQuantity(),
+                dto.getLocation(),
+                dto.getStatus()
+        );
+    }
+
+    public TransportDto getTransportDto(Transport entity) {
+        if (entity == null) return null;
+        return new TransportDto(
+                entity.getTransportId(),
+                entity.getProductId(),
+                entity.getVehicleNumber(),
+                entity.getTransportDate(),
+                entity.getDeliveryBeginTime(),
+                entity.getDeliveryEndTime(),
+                entity.getQuantity(),
+                entity.getLocation(),
+                entity.getStatus()
+        );
+    }
+    public Stock getStock(StockDto dto) {
+        if (dto == null) return null;
+        return new Stock(
+                dto.getStockId(),
+                dto.getProductId(),
+                dto.getProductName(),
+                dto.getQty(),
+                dto.getDate(),
+                dto.getTime()
+        );
+    }
+
+    public StockDto getStockDto(Stock entity) {
+        if (entity == null) return null;
+        return new StockDto(
+                entity.getStockId(),
+                entity.getProductId(),
+                entity.getProductName(),
+                entity.getQty(),
+                entity.getDate(),
+                entity.getTime()
         );
     }
 

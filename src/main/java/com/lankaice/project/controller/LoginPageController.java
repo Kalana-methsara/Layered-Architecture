@@ -5,7 +5,6 @@ import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.UserBO;
 import com.lankaice.project.dto.UserDto;
 import com.lankaice.project.dto.Session;
-import com.lankaice.project.model.UserModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;

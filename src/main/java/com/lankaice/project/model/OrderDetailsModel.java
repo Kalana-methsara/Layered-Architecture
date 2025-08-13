@@ -1,5 +1,8 @@
 package com.lankaice.project.model;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.StockBO;
 import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.OrderDetailsDto;
 import com.lankaice.project.dao.util.SQLUtil;
@@ -14,17 +17,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class OrderDetailsModel {
-private final StockModel stockModel=new StockModel();
+    private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
     public boolean saveOrderDetailsList(ArrayList<OrderDetailsDto> cartList) throws SQLException, ClassNotFoundException {
         for (OrderDetailsDto orderDetailsDto : cartList) {
             boolean isDetailsSaved = saveOrderDetails(orderDetailsDto);
             if (!isDetailsSaved) {
                 return false;
             }
-            boolean isUpdated = stockModel.reduceQty(orderDetailsDto);
-            if (!isUpdated) {
+         stockBO.reduceQty(orderDetailsDto.getProductId(), orderDetailsDto.getQuantity());
                 return false;
-            }
+
 
             //oooo
         }

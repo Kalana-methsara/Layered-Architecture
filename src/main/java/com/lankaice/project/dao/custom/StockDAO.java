@@ -11,6 +11,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface StockDAO extends CrudDAO<Stock> {
+    boolean save(String productId, String productName, int quantity, LocalDate date, LocalTime time) throws SQLException, ClassNotFoundException;
+
     boolean reduceQty(String productId,int quantity) throws SQLException, ClassNotFoundException;
 
     int currentStock() throws SQLException, ClassNotFoundException;
@@ -22,4 +24,6 @@ public interface StockDAO extends CrudDAO<Stock> {
     List<Stock> searchStock(String text) throws SQLException, ClassNotFoundException;
 
     Stock getStockById(int stockId) throws SQLException, ClassNotFoundException;
+
+
 }

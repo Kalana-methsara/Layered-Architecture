@@ -2,6 +2,8 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.StockBO;
+import com.lankaice.project.bo.custom.TransportBO;
 import com.lankaice.project.bo.custom.VehicleBO;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.model.*;
@@ -74,10 +76,10 @@ public class DashboardPageController implements Initializable {
     private Label lblCurrentStock;
 
     private final OrderDetailsModel orderDetailsModel = new OrderDetailsModel();
-    private final StockModel stockModel = new StockModel();
-    private final TransportModel transportModel = new TransportModel();
+    private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
     private final OrdersModel ordersModel = new OrdersModel();
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
+    private final TransportBO transportBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.TRANSPORT);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -213,11 +215,11 @@ public class DashboardPageController implements Initializable {
     private void loadDashboardStats() throws SQLException, ClassNotFoundException {
         int sale =orderDetailsModel.todaySale();
         lblSale.setText(String.valueOf(sale));
-int production =stockModel.todayAddedStock();
+int production =stockBO.todayAddedStock();
         lblProduction.setText(String.valueOf(production));
-        int transport=transportModel.getTodayTransportTotal();
+        int transport=transportBO.getTodayTransportTotal();
         lblTransport.setText(String.valueOf(transport));
-        int stock =stockModel.currentStock();
+        int stock =stockBO.currentStock();
         lblCurrentStock.setText(String.valueOf(stock));
     }
     private void showAlert(Alert.AlertType type, String message) {

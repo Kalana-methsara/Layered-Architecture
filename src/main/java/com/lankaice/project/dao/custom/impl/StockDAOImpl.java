@@ -37,8 +37,13 @@ public class StockDAOImpl implements StockDAO {
 
     @Override
     public boolean save(Stock stock) throws SQLException, ClassNotFoundException {
+        return false;
+    }
+
+    @Override
+    public boolean save(String productId, String productName, int quantity, LocalDate date, LocalTime time) throws SQLException, ClassNotFoundException {
         String sql = "INSERT INTO Stock (product_id, product_name, stock_quantity, stock_date, stock_time) VALUES (?, ?, ?, ?, ?)";
-        return SQLUtil.execute(sql, stock.getProductId(), stock.getProductName(), stock.getQty(), stock.getDate(), stock.getTime());    }
+        return SQLUtil.execute(sql, productId, productName, quantity, date, time);    }
 
     @Override
     public boolean update(Stock stock) throws SQLException, ClassNotFoundException {

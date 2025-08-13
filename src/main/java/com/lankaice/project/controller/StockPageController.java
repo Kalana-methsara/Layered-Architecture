@@ -1,8 +1,10 @@
 package com.lankaice.project.controller;
 
+import com.lankaice.project.bo.BOFactoryImpl;
+import com.lankaice.project.bo.BOType;
+import com.lankaice.project.bo.custom.StockBO;
 import com.lankaice.project.dto.StockDto;
 import com.lankaice.project.model.ProductModel;
-import com.lankaice.project.model.StockModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -64,7 +66,7 @@ public class StockPageController implements Initializable {
     @FXML
     private Label txtYear;
 
-    private final StockModel stockModel = new StockModel();
+    private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
     private final ProductModel productModel = new ProductModel();
 
     @Override
@@ -114,17 +116,14 @@ public class StockPageController implements Initializable {
         }
 
         try {
-            boolean isAdded = stockModel.addStock(productId, productName, quantity, LocalDate.now(), LocalTime.now());
-            if (isAdded) {
+            stockBO.saveStock(productId, productName, quantity, LocalDate.now(), LocalTime.now());
                 showAlert(Alert.AlertType.INFORMATION, "Stock Added!");
                 clearFields();
                 loadStockData();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Failed to add stock.");
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Database Error!");
+            showAlert(Alert.AlertType.ERROR, "Failed to add stock.");
         }
     }
 
@@ -141,13 +140,13 @@ public class StockPageController implements Initializable {
             String productName = textProductName.getText();
             int qty = Integer.parseInt(textQty.getText());
 
-            StockDto existing = stockModel.getStockById(stockId);
+            StockDto existing = stockBO.findStockById(stockId);
             if (existing == null) {
                 showAlert(Alert.AlertType.ERROR, "No stock found for this ID.");
                 return;
             }
 
-            boolean isUpdated = stockModel.updateStock(new StockDto(
+            boolean isUpdated = stockBO.updateStock(new StockDto(
                     stockId, productId, productName, qty, existing.getDate(), existing.getTime()
             ));
 
@@ -187,7 +186,7 @@ public class StockPageController implements Initializable {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 try {
-                    boolean deleted = stockModel.deleteStock(String.valueOf(stockId));
+                    boolean deleted = stockBO.deleteStock(String.valueOf(stockId));
                     if (deleted) {
                         clearFields();
                         loadStockData();
@@ -234,7 +233,7 @@ public class StockPageController implements Initializable {
         }
 
         try {
-            List<StockDto> results = stockModel.searchStock(search);
+            List<StockDto> results = stockBO.searchStock(search);
             tableView.setItems(FXCollections.observableArrayList(results));
         } catch (Exception e) {
             e.printStackTrace();
@@ -253,7 +252,7 @@ public class StockPageController implements Initializable {
         }
 
         try {
-            List<StockDto> list = stockModel.getStockByMonthAndYear(year, month);
+            List<StockDto> list = stockBO.getStockByMonthAndYear(year, month);
             tableView.setItems(FXCollections.observableArrayList(list));
         } catch (Exception e) {
             e.printStackTrace();
@@ -297,7 +296,7 @@ public class StockPageController implements Initializable {
 
     private void loadStockData() {
         try {
-            List<StockDto> allStock = stockModel.getAllStock();
+            List<StockDto> allStock = stockBO.getAllStocks();
             ObservableList<StockDto> list = FXCollections.observableArrayList(allStock);
             tableView.setItems(list);
         } catch (SQLException | ClassNotFoundException e) {
