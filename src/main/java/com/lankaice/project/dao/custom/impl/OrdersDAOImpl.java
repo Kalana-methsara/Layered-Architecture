@@ -35,8 +35,9 @@ public class OrdersDAOImpl implements OrdersDAO {
 
     @Override
     public boolean save(Orders order) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO Orders (customer_id, order_date, order_time, description, vehicle_number, total_amount) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Orders (order_id,customer_id, order_date, order_time, description, vehicle_number, total_amount) VALUES (?, ? , ?, ?, ?, ?, ?)";
         return SQLUtil.execute(sql,
+                order.getOrderId(),
                 order.getCustomerId(),
                 order.getOrderDate(),
                 order.getOrderTime(),

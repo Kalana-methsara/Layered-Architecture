@@ -9,28 +9,31 @@ import com.lankaice.project.db.DBConnection;
 import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.dto.OrderDetailsDto;
 import com.lankaice.project.dto.OrdersDto;
+import com.lankaice.project.dto.PendingOrderDto;
 import com.lankaice.project.entity.Booking;
 import com.lankaice.project.entity.OrderDetails;
 import com.lankaice.project.entity.Orders;
 import com.lankaice.project.entity.PendingOrder;
+import org.threeten.bp.LocalDateTime;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
+
 public class PlaceOrderBOImpl implements PlaceOrderBO {
 
-    private OrdersDAO ordersDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDERS);
-    private OrderDetailsDAO orderDetailsDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDER_DETAIL);
-    private StockDAO stockDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.STOCK);
-    private PendingOrderDAO pendingOrderDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.PENDING_ORDERS);
-    private BookingDAO bookingDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.BOOKING);
-    private DeliveryDAO deliveryDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.DELIVERY);
-    private VehicleDAO vehicleDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.VEHICLE);
+    private final OrdersDAO ordersDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDERS);
+    private final OrderDetailsDAO orderDetailsDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDER_DETAIL);
+    private final StockDAO stockDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.STOCK);
+    private final PendingOrderDAO pendingOrderDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.PENDING_ORDERS);
+    private final BookingDAO bookingDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.BOOKING);
+    private final DeliveryDAO deliveryDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.DELIVERY);
+    private final VehicleDAO vehicleDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.VEHICLE);
     private final CustomerDAO customerDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.CUSTOMER);
     private final ProductDAO productDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.PRODUCT);
 
@@ -129,22 +132,6 @@ public class PlaceOrderBOImpl implements PlaceOrderBO {
 
             // Reduce stock
             if (!stockDAO.reduceQty(detailsDto.getProductId(), detailsDto.getQuantity())) {
-                return false;
-            }
-            String customerName = customerDAO.findNameById(dto.getCustomerId());
-            String productName = productDAO.findNameById(detailsDto.getProductId());
-            // Insert pending order
-            PendingOrder pendingOrder = new PendingOrder(
-                    dto.getOrderId(),
-                    dto.getOrderId(),
-                    customerName,
-                    productName,
-                    detailsDto.getQuantity(),
-                    LocalDateTime.now(),
-                    "PENDING"
-            );
-
-            if (!pendingOrderDAO.save(pendingOrder)) {
                 return false;
             }
         }
