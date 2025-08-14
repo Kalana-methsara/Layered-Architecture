@@ -1,15 +1,18 @@
 package com.lankaice.project.dto;
+import com.lankaice.project.entity.Booking;
 import lombok.*;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-public class BookingDto {
+public class BookingDto extends Booking {
     private int bookingId;
     private String customerId;
     private String productId;
@@ -26,5 +29,6 @@ public class BookingDto {
         this.quantity = qty;
         this.status = status;
     }
+
 
 }

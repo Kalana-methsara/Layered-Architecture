@@ -18,7 +18,7 @@ public class DeliveryDAOImpl implements DeliveryDAO {
 
     @Override
     public boolean save(Delivery delivery) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO Delivery (order_id, delivery_date, delivery_time, delivery_address, delivery_status,ehicle_id) " +
+        String sql = "INSERT INTO Delivery (order_id, delivery_date, delivery_time, delivery_address, delivery_status,vehicle_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
         return SQLUtil.execute(sql,
@@ -57,4 +57,17 @@ public class DeliveryDAOImpl implements DeliveryDAO {
         }
         return Optional.empty();
     }
+
+    @Override
+    public boolean save(int orderId, String orderDate, String orderTime, String galle, String pending, String vehicleId) throws SQLException, ClassNotFoundException {
+        String sql = "INSERT INTO Delivery (order_id, delivery_date, delivery_time, delivery_address, delivery_status,vehicle_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        return SQLUtil.execute(sql,
+                orderId,
+                orderDate,
+                orderTime,
+                galle,
+                pending,
+                vehicleId        );    }
 }

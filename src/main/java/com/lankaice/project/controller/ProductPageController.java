@@ -5,7 +5,6 @@ import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.*;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.dto.tm.ProductTM;
-import com.lankaice.project.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

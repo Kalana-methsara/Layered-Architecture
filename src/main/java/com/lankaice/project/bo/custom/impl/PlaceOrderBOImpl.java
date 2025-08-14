@@ -1,26 +1,41 @@
 package com.lankaice.project.bo.custom.impl;
 
 import com.lankaice.project.bo.custom.PlaceOrderBO;
-import com.lankaice.project.dao.DAOFactory;
-import com.lankaice.project.dao.custom.OrderDetailsDAO;
-import com.lankaice.project.dao.custom.OrdersDAO;
-import com.lankaice.project.dao.custom.StockDAO;
+import com.lankaice.project.bo.custom.VehicleBO;
+import com.lankaice.project.dao.custom.*;
 import com.lankaice.project.dao.util.DAOFactoryImpl;
 import com.lankaice.project.dao.util.DAOType;
 import com.lankaice.project.db.DBConnection;
+import com.lankaice.project.dto.BookingDto;
 import com.lankaice.project.dto.OrderDetailsDto;
 import com.lankaice.project.dto.OrdersDto;
+import com.lankaice.project.entity.Booking;
 import com.lankaice.project.entity.OrderDetails;
 import com.lankaice.project.entity.Orders;
+import com.lankaice.project.entity.PendingOrder;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class PlaceOrderBOImpl implements PlaceOrderBO {
+
     private OrdersDAO ordersDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDERS);
     private OrderDetailsDAO orderDetailsDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDER_DETAIL);
     private StockDAO stockDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.STOCK);
+    private PendingOrderDAO pendingOrderDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.PENDING_ORDERS);
+    private BookingDAO bookingDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.BOOKING);
+    private DeliveryDAO deliveryDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.DELIVERY);
+    private VehicleDAO vehicleDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.VEHICLE);
+    private final CustomerDAO customerDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.CUSTOMER);
+    private final ProductDAO productDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.PRODUCT);
+
+
+    private VehicleBO vehicleBO; // If your VehicleBO is needed for vehicleId fetching
 
     @Override
     public boolean placeOrder(OrdersDto dto) throws SQLException, ClassNotFoundException {
@@ -28,51 +43,108 @@ public class PlaceOrderBOImpl implements PlaceOrderBO {
 
         try {
             connection.setAutoCommit(false);
-            Orders orders = new Orders();
-            orders.setOrderId(dto.getOrderId());
-            orders.setCustomerId(dto.getCustomerId());
-            orders.setOrderDate(dto.getOrderDate());
-            orders.setOrderTime(dto.getOrderTime());
-            orders.setVehicle_number(dto.getVehicle_number());
-            orders.setTotalAmount(dto.getTotalAmount());
 
-            boolean isOrderSaved = ordersDAO.save(orders);
+            // Save order
+            Orders orders = new Orders(
+                    dto.getOrderId(),
+                    dto.getCustomerId(),
+                    dto.getOrderDate(),
+                    dto.getOrderTime(),
+                    dto.getDescription(),
+                    dto.getVehicle_number(),
+                    dto.getTotalAmount()
+            );
 
-            if (isOrderSaved) {
-                boolean isSuccess = saveDetailsAndUpdateStock(dto.getCartList());
-                if (isSuccess) {
-                    connection.commit();
-                    return true;
+            if (!ordersDAO.save(orders)) {
+                connection.rollback();
+                return false;
+            }
+
+            // Save details, update stock, insert pending orders
+            if (!saveDetailsStockAndPending(dto)) {
+                connection.rollback();
+                return false;
+            }
+            for (OrderDetailsDto detailsDto : dto.getCartList()) {
+            // Update booking if exists
+            if (bookingDAO.isDuplicate(dto.getCustomerId(), dto.getOrderDate())) {
+
+                Booking booking = new BookingDto(
+                        dto.getCustomerId(),
+                        detailsDto.getProductId(),
+                        dto.getOrderDate(),
+                        LocalTime.now().toString(),
+                        detailsDto.getQuantity(),
+                        "Confirmed"
+                        );
+                if (!bookingDAO.update(booking)) {
+                    connection.rollback();
+                    return false;
                 }
             }
-            connection.rollback();
-            return false;
+        }
+            // Add delivery & update vehicle
+            if (dto.getVehicle_number() != null && !dto.getVehicle_number().isEmpty()) {
+                String vehicleId = vehicleBO.getVehicleIdByNumber(dto.getVehicle_number());
+
+                if (!deliveryDAO.save(dto.getOrderId(), dto.getOrderDate(),
+                        dto.getOrderTime(), "Galle", "Pending", vehicleId)) {
+                    connection.rollback();
+                    return false;
+                }
+
+                if (!vehicleDAO.updates(vehicleId, "Inactive")) {
+                    connection.rollback();
+                    return false;
+                }
+            }
+
+            connection.commit();
+            return true;
 
         } catch (Exception e) {
             connection.rollback();
+            e.printStackTrace();
             return false;
         } finally {
             connection.setAutoCommit(true);
-
         }
     }
 
-    private boolean saveDetailsAndUpdateStock(List<OrderDetailsDto> orderDetailsDtoList) throws SQLException, ClassNotFoundException {
-        for (OrderDetailsDto detailsDto : orderDetailsDtoList) {
+    private boolean saveDetailsStockAndPending(OrdersDto dto) throws SQLException, ClassNotFoundException {
+        for (OrderDetailsDto detailsDto : dto.getCartList()) {
 
-            OrderDetails orderDetails = new OrderDetails();
-            orderDetails.setOrderId(detailsDto.getOrderId());
-            orderDetails.setProductId(detailsDto.getProductId());
-            orderDetails.setQuantity(detailsDto.getQuantity());
-            orderDetails.setUnitPrice(detailsDto.getUnitPrice());
-            orderDetails.setDiscount(detailsDto.getDiscount());
+            // Save order details
+            OrderDetails orderDetails = new OrderDetails(
+                    dto.getOrderId(),
+                    detailsDto.getProductId(),
+                    detailsDto.getQuantity(),
+                    detailsDto.getUnitPrice(),
+                    detailsDto.getDiscount()
+            );
 
             if (!orderDetailsDAO.save(orderDetails)) {
                 return false;
             }
 
-            boolean isStockUpdated = stockDAO.reduceQty(detailsDto.getProductId(), detailsDto.getQuantity());
-            if (!isStockUpdated) {
+            // Reduce stock
+            if (!stockDAO.reduceQty(detailsDto.getProductId(), detailsDto.getQuantity())) {
+                return false;
+            }
+            String customerName = customerDAO.findNameById(dto.getCustomerId());
+            String productName = productDAO.findNameById(detailsDto.getProductId());
+            // Insert pending order
+            PendingOrder pendingOrder = new PendingOrder(
+                    dto.getOrderId(),
+                    dto.getOrderId(),
+                    customerName,
+                    productName,
+                    detailsDto.getQuantity(),
+                    LocalDateTime.now(),
+                    "PENDING"
+            );
+
+            if (!pendingOrderDAO.save(pendingOrder)) {
                 return false;
             }
         }

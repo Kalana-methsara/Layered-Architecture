@@ -4,7 +4,6 @@ import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
 import com.lankaice.project.bo.custom.*;
 import com.lankaice.project.dto.*;
-import com.lankaice.project.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -201,8 +200,7 @@ public class DashboardPageController implements Initializable {
         });
 
         try {
-            OrdersModel ordersModel = new OrdersModel();
-            ArrayList<PendingOrderDto> pendingOrders = ordersModel.getPendingOrdersByDate(LocalDate.now());
+            ArrayList<PendingOrderDto> pendingOrders = ordersBO.getPendingOrdersByDate(LocalDate.now());
             ObservableList<PendingOrderDto> observableList = FXCollections.observableArrayList(pendingOrders);
             tableOrder.setItems(observableList);
         } catch (SQLException | ClassNotFoundException e) {

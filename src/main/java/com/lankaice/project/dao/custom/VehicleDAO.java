@@ -18,4 +18,5 @@ public interface VehicleDAO extends CrudDAO<Vehicle> {
     boolean setUnderRepairVehicle(String vehicleNumber) throws SQLException, ClassNotFoundException;
 
 
+    boolean updates(String vehicleId, String inactive) throws SQLException, ClassNotFoundException;
 }

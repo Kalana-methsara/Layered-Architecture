@@ -6,12 +6,15 @@ import com.lankaice.project.bo.exception.DuplicateException;
 import com.lankaice.project.bo.exception.NotFoundException;
 import com.lankaice.project.bo.util.EntityDTOConverter;
 import com.lankaice.project.dao.custom.OrdersDAO;
+import com.lankaice.project.dao.custom.QueryDAO;
 import com.lankaice.project.dao.util.DAOFactoryImpl;
 import com.lankaice.project.dao.util.DAOType;
 import com.lankaice.project.dto.OrdersDto;
+import com.lankaice.project.dto.PendingOrderDto;
 import com.lankaice.project.entity.Orders;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class OrdersBOImpl implements OrdersBO {
 
     private final OrdersDAO ordersDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.ORDERS);
+    private final QueryDAO queryDAO = DAOFactoryImpl.getInstance().getDAO(DAOType.QUERY);
     private final EntityDTOConverter converter = new EntityDTOConverter();
 
     @Override
@@ -85,5 +89,10 @@ public class OrdersBOImpl implements OrdersBO {
     @Override
     public boolean existOrdersByCustomerId(String customerId) throws SQLException, ClassNotFoundException {
         return ordersDAO.existOrdersByCustomerId(customerId);
+    }
+
+    @Override
+    public ArrayList<PendingOrderDto> getPendingOrdersByDate(LocalDate now) throws SQLException, ClassNotFoundException {
+        return queryDAO.getPendingOrdersByDate(now);
     }
 }

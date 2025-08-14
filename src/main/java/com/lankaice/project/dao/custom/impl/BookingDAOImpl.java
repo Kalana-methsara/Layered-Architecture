@@ -2,7 +2,6 @@ package com.lankaice.project.dao.custom.impl;
 
 import com.lankaice.project.dao.custom.BookingDAO;
 import com.lankaice.project.dao.util.SQLUtil;
-import com.lankaice.project.dto.OrderPaymentDto;
 import com.lankaice.project.entity.Booking;
 
 import java.sql.ResultSet;
@@ -81,9 +80,9 @@ public class BookingDAOImpl implements BookingDAO {
     }
 
     @Override
-    public boolean deleteBooking(String customerId, String date) throws SQLException, ClassNotFoundException {
+    public void deleteBooking(String customerId, String date) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Booking WHERE customer_id = ? AND request_date = ?";
-        return SQLUtil.execute(sql, customerId, date);
+        SQLUtil.execute(sql, customerId, date);
     }
 
     @Override
@@ -119,4 +118,5 @@ public class BookingDAOImpl implements BookingDAO {
         }
         return "Unknown";
     }
+
 }
