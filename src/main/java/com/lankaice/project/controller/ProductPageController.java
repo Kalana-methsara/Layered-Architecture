@@ -2,10 +2,7 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
-import com.lankaice.project.bo.custom.CustomerBO;
-import com.lankaice.project.bo.custom.OrderPaymentBO;
-import com.lankaice.project.bo.custom.ProductBO;
-import com.lankaice.project.bo.custom.VehicleBO;
+import com.lankaice.project.bo.custom.*;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.dto.tm.ProductTM;
 import com.lankaice.project.model.*;
@@ -64,9 +61,10 @@ public class ProductPageController implements Initializable {
 
     private final ObservableList<ProductTM> productList = FXCollections.observableArrayList();
     private final CustomerBO customerBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.CUSTOMER);
-    private final OrdersModel ordersModel = new OrdersModel();
+    private final OrdersBO ordersBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ORDERS);
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
     private final ProductBO productBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PRODUCT);
+    private final PlaceOrderBO placeOrderBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PLACE_ORDER);
     private final OrderPaymentBO orderPaymentBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ORDER_PAYMENT);
     private final BillPageController billPageController = new BillPageController();
 
@@ -315,7 +313,7 @@ public class ProductPageController implements Initializable {
                 cartList.add(new OrderDetailsDto(orderId, item.getProductId(), item.getQty(), item.getPrice(), item.getDiscount()));
             }
             OrdersDto ordersDto = new OrdersDto(orderId, customerId, date, time, description, vehicleNumber, total, cartList);
-                boolean isPlaced = ordersModel.placeOrder(ordersDto);
+                boolean isPlaced = placeOrderBO.placeOrder(ordersDto);
 
                 if (isPlaced) {
                     orderPaymentBO.addPayment(ordersPaymentDto);
@@ -361,7 +359,7 @@ public class ProductPageController implements Initializable {
 
     private void loadNextOrderId() {
         try {
-            int nextId = ordersModel.getLastOrderId() + 1;
+            int nextId = ordersBO.getLastOrderId() + 1;
             lblOrderId.setText(String.valueOf(nextId));
         } catch (Exception e) {
             lblOrderId.setText("1001");

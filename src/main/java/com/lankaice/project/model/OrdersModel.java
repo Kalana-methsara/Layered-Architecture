@@ -21,31 +21,9 @@ import java.util.ArrayList;
 
 public class OrdersModel {
 
-    private final OrderDetailsModel orderDetailsModel = new OrderDetailsModel();
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
-    private final ProductBO productBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.PRODUCT);
-    private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
 
-    // View all orders
-    public ArrayList<OrdersDto> viewAllOrders() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = SQLUtil.execute("SELECT * FROM Orders");
-        ArrayList<OrdersDto> orders = new ArrayList<>();
 
-        while (resultSet.next()) {
-            OrdersDto order = new OrdersDto(
-                    resultSet.getInt("order_id"),
-                    resultSet.getString("customer_id"),
-                    resultSet.getDate("order_date").toString(),
-                    resultSet.getTime("order_time").toString(),
-                    resultSet.getString("description"),
-                    resultSet.getString("vehicle_number"),
-                    resultSet.getDouble("total_amount"),
-                    new ArrayList<>() // No details fetched here
-            );
-            orders.add(order);
-        }
-        return orders;
-    }
 
     // Get pending orders by date
     public ArrayList<PendingOrderDto> getPendingOrdersByDate(LocalDate date) throws SQLException, ClassNotFoundException {
@@ -169,20 +147,7 @@ public class OrdersModel {
     }
 
     // Get last order ID
-    public int getLastOrderId() throws SQLException, ClassNotFoundException {
-        ResultSet rs = SQLUtil.execute("SELECT MAX(order_id) AS order_id FROM Orders");
-        if (rs.next()) {
-            int lastId = rs.getInt("order_id");
-            return rs.wasNull() ? 1001 : lastId;
-        }
-        return 1001;
-    }
 
-    public boolean updateOrderStatus(int orderId, String productName, String newStatus) throws SQLException, ClassNotFoundException {
-        String productId = productBO.findIdByName(productName);
-        String sql = "UPDATE PendingOrder SET status = ? WHERE order_id = ? AND product_id = ?";
-        return SQLUtil.execute(sql, newStatus, orderId, productId); // ✅ Correct order
-    }
 
 
 }

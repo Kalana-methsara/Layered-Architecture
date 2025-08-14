@@ -2,9 +2,7 @@ package com.lankaice.project.controller;
 
 import com.lankaice.project.bo.BOFactoryImpl;
 import com.lankaice.project.bo.BOType;
-import com.lankaice.project.bo.custom.StockBO;
-import com.lankaice.project.bo.custom.TransportBO;
-import com.lankaice.project.bo.custom.VehicleBO;
+import com.lankaice.project.bo.custom.*;
 import com.lankaice.project.dto.*;
 import com.lankaice.project.model.*;
 import javafx.collections.FXCollections;
@@ -75,11 +73,11 @@ public class DashboardPageController implements Initializable {
     @FXML
     private Label lblCurrentStock;
 
-    private final OrderDetailsModel orderDetailsModel = new OrderDetailsModel();
     private final StockBO stockBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.STOCK);
-    private final OrdersModel ordersModel = new OrdersModel();
+    private final OrdersBO ordersBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ORDERS);
     private final VehicleBO vehicleBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.VEHICLE);
     private final TransportBO transportBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.TRANSPORT);
+    private final OrderDetailsBO orderDetailsBO = ((BOFactoryImpl) BOFactoryImpl.getInstance()).getBO(BOType.ORDER_DETAIL);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -99,7 +97,7 @@ public class DashboardPageController implements Initializable {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         try {
-            Map<LocalDate, Integer> salesData = orderDetailsModel.getSalesForLast7Days();
+            Map<LocalDate, Integer> salesData = orderDetailsBO.getSalesForLast7Days();
             for (Map.Entry<LocalDate, Integer> entry : salesData.entrySet()) {
                 series.getData().add(new XYChart.Data<>(entry.getKey().toString(), entry.getValue()));
             }
@@ -156,7 +154,7 @@ public class DashboardPageController implements Initializable {
                     if (!"COMPLETED".equals(order.getStatus())) {
                         boolean updated = false;
                         try {
-                            updated = ordersModel.updateOrderStatus(order.getOrderId(),order.getProductName(), "COMPLETED");
+                            updated = ordersBO.updateOrderStatus(order.getOrderId(),order.getProductName(), "COMPLETED");
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         } catch (ClassNotFoundException e) {
@@ -175,7 +173,7 @@ public class DashboardPageController implements Initializable {
                     if (!"CANCELLED".equals(order.getStatus())) {
                         boolean updated = false;
                         try {
-                            updated = ordersModel.updateOrderStatus(order.getOrderId(),order.getProductName(), "CANCELLED");
+                            updated = ordersBO.updateOrderStatus(order.getOrderId(),order.getProductName(), "CANCELLED");
                         } catch (SQLException | ClassNotFoundException e) {
                             throw new RuntimeException(e);
                         }
@@ -213,7 +211,7 @@ public class DashboardPageController implements Initializable {
     }
 
     private void loadDashboardStats() throws SQLException, ClassNotFoundException {
-        int sale =orderDetailsModel.todaySale();
+        int sale =orderDetailsBO.todaySale();
         lblSale.setText(String.valueOf(sale));
 int production =stockBO.todayAddedStock();
         lblProduction.setText(String.valueOf(production));

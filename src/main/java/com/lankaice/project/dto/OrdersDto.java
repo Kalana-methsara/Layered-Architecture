@@ -21,4 +21,13 @@ public class OrdersDto {
     private ArrayList<OrderDetailsDto> cartList;
 
 
+    public OrdersDto(int orderId, String customerId, String orderDate, String orderTime, String description, String vehicleNumber, double totalAmount) {
+        this.orderId = orderId;
+        this.customerId = customerId;
+        this.orderDate = orderDate;
+        this.orderTime = orderTime;
+        this.description = description;
+        this.vehicle_number = vehicleNumber;
+        this.totalAmount = totalAmount;
+    }
 }

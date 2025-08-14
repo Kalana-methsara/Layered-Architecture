@@ -287,4 +287,40 @@ public class EntityDTOConverter {
                 dto.getStatus()
         );
     }
+    public OrdersDto getOrdersDto(Orders entity) {
+        if (entity == null) return null;
+        return new OrdersDto(
+                entity.getOrderId(),
+                entity.getCustomerId(),
+                entity.getOrderDate(),
+                entity.getOrderTime(),
+                entity.getDescription(),
+                entity.getVehicle_number(),
+                entity.getTotalAmount()
+        );
+    }
+
+    public Orders getOrders(OrdersDto dto) {
+        if (dto == null) return null;
+        return new Orders(
+                dto.getOrderId(),
+                dto.getCustomerId(),
+                dto.getOrderDate(),
+                dto.getOrderTime(),
+                dto.getDescription(),
+                dto.getVehicle_number(),
+                dto.getTotalAmount()
+        );
+    }
+
+    public OrderDetails getOrderDetailsEntity(OrderDetailsDto dto) {
+        if (dto == null) return null;
+        return new OrderDetails(
+                dto.getOrderId(),
+                dto.getProductId(),
+                dto.getQuantity(),
+                dto.getUnitPrice(),
+                dto.getDiscount()
+        );
+    }
 }
