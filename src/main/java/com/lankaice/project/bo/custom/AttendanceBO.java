@@ -25,5 +25,5 @@ public interface AttendanceBO extends SuperBO {
 
     List<AttendanceDto> getAttendanceByDate(LocalDate date) throws SQLException, ClassNotFoundException;
 
-    boolean markAttendance(AttendanceDto dto);
+    boolean markAttendance(AttendanceDto dto) throws SQLException, ClassNotFoundException;
 }

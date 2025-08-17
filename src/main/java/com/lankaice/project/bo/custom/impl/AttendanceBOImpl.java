@@ -6,10 +6,13 @@ import com.lankaice.project.bo.util.EntityDTOConverter;
 import com.lankaice.project.dao.custom.AttendanceDAO;
 import com.lankaice.project.dao.util.DAOFactoryImpl;
 import com.lankaice.project.dao.util.DAOType;
+import com.lankaice.project.dao.util.SQLUtil;
 import com.lankaice.project.dto.AttendanceDto;
 import com.lankaice.project.entity.Attendance;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -77,7 +80,18 @@ public class AttendanceBOImpl implements AttendanceBO {
     }
 
     @Override
-    public boolean markAttendance(AttendanceDto dto) {
-        return false;
-    }
+    public boolean markAttendance(AttendanceDto dto) throws SQLException, ClassNotFoundException {
+        String sql = "INSERT INTO Attendance (employee_id, date, shift, status, in_time, out_time) " +
+                "VALUES (?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE status = VALUES(status), in_time = VALUES(in_time), out_time = VALUES(out_time)";
+
+        return SQLUtil.<Boolean>execute(
+                sql,
+                dto.getEmployeeId(),
+                Date.valueOf(dto.getDate()),
+                dto.getShift(),
+                dto.getStatus(),
+                dto.getInTime() != null ? Time.valueOf(dto.getInTime()) : null,
+                dto.getOutTime() != null ? Time.valueOf(dto.getOutTime()) : null
+        );    }
 }

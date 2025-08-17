@@ -99,7 +99,7 @@ public class VehicleDAOImpl implements VehicleDAO {
     }
 
     @Override
-    public boolean updates(String vehicleNumber, String inactive) throws SQLException, ClassNotFoundException {
+    public boolean updates(String vehicleNumber) throws SQLException, ClassNotFoundException {
         return SQLUtil.execute("UPDATE Vehicle SET status = 'Inactive' WHERE vehicle_number = ?", vehicleNumber);
     }
 }

@@ -109,8 +109,12 @@ public class QRHttpServer {
                             LocalTime.now(),
                             null  // Out time can be handled separately later
                     );
-
-                    boolean result = attendanceBO.markAttendance(dto);
+                    boolean result = false;
+                    try {
+                        result = attendanceBO.markAttendance(dto);
+                    } catch (SQLException | ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
                     response = result
                             ? "✅ Attendance marked for " + empId + " (" + shift + " shift)"
                             : "❌ Failed to mark attendance.";

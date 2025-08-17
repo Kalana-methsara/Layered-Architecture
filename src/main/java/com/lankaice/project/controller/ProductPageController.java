@@ -305,8 +305,6 @@ public class ProductPageController implements Initializable {
                 return;
             }
 
-            boolean save = controller.isSave();
-
             ArrayList<OrderDetailsDto> cartList = new ArrayList<>();
             for (ProductTM item : productList) {
                 cartList.add(new OrderDetailsDto(orderId, item.getProductId(), item.getQty(), item.getPrice(), item.getDiscount()));
